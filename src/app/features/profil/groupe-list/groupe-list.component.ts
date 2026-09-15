@@ -8,13 +8,21 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Groupe } from '../../../core/models/groupe.models';
 import { toggleActif } from '../../../core/utils/toggle-actif';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
+import { BreadcrumbComponent } from '../../../shared/layout/breadcrumb/breadcrumb.component';
 import { DialogService } from '../../../shared/services/dialog.service';
 import { GroupeFormComponent } from '../groupe-form/groupe-form.component';
 
 @Component({
   selector: 'app-groupe-list',
   standalone: true,
-  imports: [MatIconModule, MatButtonModule, MatProgressSpinnerModule, MatSlideToggleModule, SearchFieldComponent],
+  imports: [
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule,
+    SearchFieldComponent,
+    BreadcrumbComponent
+  ],
   templateUrl: './groupe-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -78,12 +86,16 @@ export class GroupeListComponent implements OnInit {
   }
 
   openEdit(groupe: Groupe): void {
-    this.openDialog(groupe);
+    this.openDialog(groupe, false);
   }
 
-  private openDialog(groupe: Groupe | null): void {
+  openDetail(groupe: Groupe): void {
+    this.openDialog(groupe, true);
+  }
+
+  private openDialog(groupe: Groupe | null, readOnly = false): void {
     this.dialogService
-      .open(GroupeFormComponent, { size: 'large', data: { groupe } })
+      .open(GroupeFormComponent, { size: 'large', data: { groupe, readOnly } })
       .afterClosed()
       .subscribe((saved) => {
         if (saved) {

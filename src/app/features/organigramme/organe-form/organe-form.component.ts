@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs';
 import { OrganigrammeService } from '../../../core/services/organigramme.service';
@@ -15,9 +17,13 @@ import { FormActionsComponent } from '../../../shared/components/form-actions/fo
 import { DialogLoadingComponent } from '../../../shared/components/dialog-loading/dialog-loading.component';
 import { DialogHeaderComponent } from '../../../shared/components/dialog-header/dialog-header.component';
 import { FormSectionComponent } from '../../../shared/components/form-section/form-section.component';
+import { DetailFieldComponent } from '../../../shared/components/detail-field/detail-field.component';
 
 export interface OrganeFormDialogData {
   organe: Organe | null;
+  /** Popup en lecture seule (icône "œil" des listes) : formulaire désactivé, un seul bouton
+   * "Fermer" à la place d'Annuler/Enregistrer. */
+  readOnly?: boolean;
 }
 
 @Component({
@@ -28,12 +34,15 @@ export interface OrganeFormDialogData {
     MatFormFieldModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatButtonModule,
+    MatIconModule,
     MatDialogModule,
     TextFieldComponent,
     FormActionsComponent,
     DialogLoadingComponent,
     DialogHeaderComponent,
-    FormSectionComponent
+    FormSectionComponent,
+    DetailFieldComponent
   ],
   templateUrl: './organe-form.component.html',
   styleUrl: './organe-form.component.css',
@@ -49,12 +58,31 @@ export class OrganeFormComponent implements OnInit {
 
   private readonly organeId = this.data.organe?.id ?? null;
   readonly isEdit = this.organeId !== null;
-  readonly title = this.isEdit ? "Modifier l'entité" : 'Nouvelle entité';
+  readonly readOnly = this.data.readOnly ?? false;
+  readonly title = this.readOnly ? "Détails de l'entité" : this.isEdit ? "Modifier l'entité" : 'Nouvelle entité';
 
   readonly loading = signal(true);
   readonly isSubmitting = signal(false);
   readonly organesDisponibles = signal<Organe[]>([]);
   readonly profils = signal<Profil[]>([]);
+  readonly detailView = signal<Organe | null>(this.data.organe);
+
+  readonly tutelleLabel = computed(() => {
+    const tutelleId = this.detailView()?.organe_superieure;
+    if (!tutelleId) {
+      return 'Aucune';
+    }
+    return this.organesDisponibles().find((o) => o.id === tutelleId)?.organe ?? '—';
+  });
+
+  readonly responsableLabel = computed(() => {
+    const responsableId = this.detailView()?.responsable;
+    if (!responsableId) {
+      return 'Aucun';
+    }
+    const profil = this.profils().find((p) => p.id === responsableId);
+    return profil ? `${profil.prenom} ${profil.nom}` : '—';
+  });
 
   readonly form = this.fb.nonNullable.group({
     organe: [this.data.organe?.organe ?? '', [Validators.required]],
@@ -73,6 +101,10 @@ export class OrganeFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.readOnly) {
+      this.form.disable();
+    }
+
     forkJoin([this.organigrammeService.listOrganes(), this.profilService.listProfils()]).subscribe({
       next: ([organes, profils]) => {
         this.organesDisponibles.set(organes.filter((o) => o.id !== this.organeId));
@@ -84,6 +116,21 @@ export class OrganeFormComponent implements OnInit {
         this.loading.set(false);
       }
     });
+
+    /** Ne bloque pas l'ouverture de la popup : affiche d'abord la ligne cliquée (déjà dans
+     * `data.organe`), puis repatch silencieusement si l'API renvoie une version plus fraîche. */
+    if (this.organeId) {
+      this.organigrammeService.detailOrgane(this.organeId).subscribe((organe) => {
+        this.form.patchValue({
+          organe: organe.organe,
+          abreviation: organe.abreviation,
+          organe_superieure: organe.organe_superieure ?? '',
+          responsable: organe.responsable ?? '',
+          actif: organe.actif
+        });
+        this.detailView.set(organe);
+      });
+    }
   }
 
   cancel(): void {

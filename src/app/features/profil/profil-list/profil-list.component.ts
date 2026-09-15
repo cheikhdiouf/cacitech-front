@@ -11,6 +11,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Profil } from '../../../core/models/profil.models';
 import { toggleActif } from '../../../core/utils/toggle-actif';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
+import { BreadcrumbComponent } from '../../../shared/layout/breadcrumb/breadcrumb.component';
 import { DialogService } from '../../../shared/services/dialog.service';
 
 interface ProfilRow {
@@ -28,7 +29,8 @@ interface ProfilRow {
     MatButtonModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
-    SearchFieldComponent
+    SearchFieldComponent,
+    BreadcrumbComponent
   ],
   templateUrl: './profil-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush

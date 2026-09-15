@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -14,6 +15,9 @@ import { Fonction, Organe } from '../../../core/models/organigramme.models';
 import { Groupe } from '../../../core/models/groupe.models';
 import { TextFieldComponent } from '../../../shared/components/text-field/text-field.component';
 import { FormActionsComponent } from '../../../shared/components/form-actions/form-actions.component';
+import { FormSectionComponent } from '../../../shared/components/form-section/form-section.component';
+import { DetailFieldComponent } from '../../../shared/components/detail-field/detail-field.component';
+import { Profil } from '../../../core/models/profil.models';
 
 const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
@@ -26,11 +30,14 @@ const ALLOWED_PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
     RouterLink,
     MatProgressSpinnerModule,
     MatIconModule,
+    MatButtonModule,
     MatFormFieldModule,
     MatSelectModule,
     MatCheckboxModule,
     TextFieldComponent,
-    FormActionsComponent
+    FormActionsComponent,
+    FormSectionComponent,
+    DetailFieldComponent
   ],
   templateUrl: './profil-form.component.html',
   styleUrl: './profil-form.component.css',
@@ -46,6 +53,7 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
 
   private readonly profilId = this.route.snapshot.paramMap.get('id');
   readonly isEdit = this.profilId !== null;
+  readonly readOnly = this.route.snapshot.queryParamMap.get('readonly') === '1';
 
   readonly loading = signal(true);
   readonly isSubmitting = signal(false);
@@ -53,6 +61,25 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
   readonly fonctions = signal<Fonction[]>([]);
   readonly groupesDisponibles = signal<Groupe[]>([]);
   readonly photoPreview = signal<string | null>(null);
+  readonly detailView = signal<Profil | null>(null);
+
+  readonly entiteLabel = computed(() => {
+    const id = this.detailView()?.entite;
+    return this.organes().find((o) => o.id === id)?.organe ?? '—';
+  });
+
+  readonly fonctionLabel = computed(() => {
+    const id = this.detailView()?.fonction;
+    return this.fonctions().find((f) => f.id === id)?.fonction ?? '—';
+  });
+
+  readonly groupesLabel = computed(() => {
+    const ids = new Set(this.detailView()?.groupes ?? []);
+    const names = this.groupesDisponibles()
+      .filter((g) => ids.has(g.id))
+      .map((g) => g.nom);
+    return names.length ? names.join(', ') : 'Aucun';
+  });
   private photoFile: File | null = null;
   /** URL blob locale (aperçu avant upload) — distincte de l'URL serveur, à révoquer nous-mêmes. */
   private objectUrl: string | null = null;
@@ -110,6 +137,10 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
             groupes: profil.groupes
           });
           this.photoPreview.set(profil.photo);
+          this.detailView.set(profil);
+          if (this.readOnly) {
+            this.form.disable();
+          }
           this.loading.set(false);
         },
         error: () => {

@@ -2,6 +2,28 @@
 
 @if (loading()) {
   <app-dialog-loading [minHeight]="430" />
+} @else if (readOnly) {
+  <div class="dialog-body">
+    <div mat-dialog-content class="organe-form__content">
+      <app-form-section label="Informations" icon="info_outline" />
+
+      <app-detail-field label="Entité (direction, service, ...)" icon="apartment" [value]="detailView()?.organe" />
+      <app-detail-field label="Abréviation" icon="short_text" [value]="detailView()?.abreviation" />
+
+      <app-form-section label="Rattachement" icon="account_tree" />
+
+      <app-detail-field label="Tutelle" icon="account_tree" [value]="tutelleLabel()" />
+      <app-detail-field label="Responsable" icon="badge" [value]="responsableLabel()" />
+      <app-detail-field label="Statut" icon="toggle_on" [value]="detailView()?.actif ? 'Active' : 'Inactive'" />
+    </div>
+
+    <div mat-dialog-actions class="detail-actions">
+      <button mat-stroked-button type="button" class="detail-actions__close" (click)="cancel()">
+        <mat-icon>close</mat-icon>
+        <span>Fermer</span>
+      </button>
+    </div>
+  </div>
 } @else {
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <div mat-dialog-content class="organe-form__content">

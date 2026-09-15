@@ -11,8 +11,9 @@
   }
 
   <div class="app-shell__main">
-    <app-navbar (menuToggle)="toggleMobileNav()" />
-    <app-breadcrumb />
+    <div class="app-shell__top">
+      <app-navbar (menuToggle)="toggleMobileNav()" />
+    </div>
 
     <main class="app-shell__content">
       <router-outlet />

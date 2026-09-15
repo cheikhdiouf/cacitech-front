@@ -5,11 +5,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PermissionService } from '../../core/services/permission.service';
 import { Permission } from '../../core/models/permission.models';
 import { SearchFieldComponent } from '../../shared/components/search-field/search-field.component';
+import { BreadcrumbComponent } from '../../shared/layout/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-permission-list',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatProgressSpinnerModule, SearchFieldComponent],
+  imports: [MatButtonModule, MatIconModule, MatProgressSpinnerModule, SearchFieldComponent, BreadcrumbComponent],
   templateUrl: './permission-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

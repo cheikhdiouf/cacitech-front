@@ -1,11 +1,11 @@
 .organe-form__content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: start;
   column-gap: 1.25rem;
   row-gap: 1rem;
-  min-width: 360px;
   padding-top: 0.25rem;
+  overflow-x: hidden;
 }
 
 .organe-form__content app-form-section,
@@ -15,6 +15,11 @@
 
 .organe-form__content mat-form-field {
   width: 100%;
+}
+
+.organe-form__content app-detail-field {
+  display: block;
+  min-width: 0;
 }
 
 @media (max-width: 480px) {

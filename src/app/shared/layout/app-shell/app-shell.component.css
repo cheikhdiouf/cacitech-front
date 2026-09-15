@@ -38,8 +38,21 @@
   flex-direction: column;
 }
 
+/* Navbar + fil d'Ariane collés ensemble : sans ce wrapper commun, seule la navbar restait
+ * fixée au scroll (position: sticky sur .navbar) tandis que le fil d'Ariane défilait
+ * normalement — il se détachait visuellement de la navbar dès qu'on scrollait la page. */
+.app-shell__top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: var(--shadow-sm);
+}
+
 .app-shell__content {
   flex: 1 1 auto;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
   padding: 1.5rem;
   animation: app-shell-fade-in 0.25s ease;
 }

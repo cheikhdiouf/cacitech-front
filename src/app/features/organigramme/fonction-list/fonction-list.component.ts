@@ -8,13 +8,21 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Fonction } from '../../../core/models/organigramme.models';
 import { toggleActif } from '../../../core/utils/toggle-actif';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
+import { BreadcrumbComponent } from '../../../shared/layout/breadcrumb/breadcrumb.component';
 import { DialogService } from '../../../shared/services/dialog.service';
 import { FonctionFormComponent } from '../fonction-form/fonction-form.component';
 
 @Component({
   selector: 'app-fonction-list',
   standalone: true,
-  imports: [MatIconModule, MatButtonModule, MatProgressSpinnerModule, MatSlideToggleModule, SearchFieldComponent],
+  imports: [
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule,
+    SearchFieldComponent,
+    BreadcrumbComponent
+  ],
   templateUrl: './fonction-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -80,12 +88,16 @@ export class FonctionListComponent implements OnInit {
   }
 
   openEdit(fonction: Fonction): void {
-    this.openDialog(fonction);
+    this.openDialog(fonction, false);
   }
 
-  private openDialog(fonction: Fonction | null): void {
+  openDetail(fonction: Fonction): void {
+    this.openDialog(fonction, true);
+  }
+
+  private openDialog(fonction: Fonction | null, readOnly = false): void {
     this.dialogService
-      .open(FonctionFormComponent, { size: 'large', data: { fonction } })
+      .open(FonctionFormComponent, { size: 'large', data: { fonction, readOnly } })
       .afterClosed()
       .subscribe((saved) => {
         if (saved) {

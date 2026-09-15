@@ -1,3 +1,5 @@
+<app-breadcrumb />
+
 <div class="list-page__header">
   <app-search-field
     class="list-page__search"
@@ -62,6 +64,15 @@
             </mat-slide-toggle>
           </td>
           <td>
+            <button
+              mat-icon-button
+              (click)="$event.stopPropagation()"
+              [routerLink]="['/profils', row.profil.id]"
+              [queryParams]="{ readonly: 1 }"
+              aria-label="Voir le détail"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
             <button mat-icon-button (click)="$event.stopPropagation()" [routerLink]="['/profils', row.profil.id]" aria-label="Modifier">
               <mat-icon>edit</mat-icon>
             </button>

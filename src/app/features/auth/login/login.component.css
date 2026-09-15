@@ -1,3 +1,27 @@
 .login-header {
   text-align: center;
 }
+
+.login-header__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--color-brand-tint);
+  color: var(--color-brand-600);
+  margin-bottom: 0.75rem;
+}
+
+.login-header__logo mat-icon {
+  font-size: 24px;
+  height: 24px;
+  width: 24px;
+}
+
+.login-header__subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}

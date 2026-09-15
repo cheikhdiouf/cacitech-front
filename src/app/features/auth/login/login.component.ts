@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -18,6 +19,7 @@ import { AuthAlertComponent } from '../../../shared/components/auth-alert/auth-a
     ReactiveFormsModule,
     MatButtonModule,
     MatCheckboxModule,
+    MatIconModule,
     MatProgressSpinnerModule,
     TextFieldComponent,
     PasswordFieldComponent,

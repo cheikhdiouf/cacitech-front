@@ -8,6 +8,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Organe } from '../../../core/models/organigramme.models';
 import { toggleActif } from '../../../core/utils/toggle-actif';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
+import { BreadcrumbComponent } from '../../../shared/layout/breadcrumb/breadcrumb.component';
 import { DialogService } from '../../../shared/services/dialog.service';
 import { OrganeFormComponent } from '../organe-form/organe-form.component';
 
@@ -19,7 +20,14 @@ interface OrganeRow {
 @Component({
   selector: 'app-organe-list',
   standalone: true,
-  imports: [MatIconModule, MatButtonModule, MatProgressSpinnerModule, MatSlideToggleModule, SearchFieldComponent],
+  imports: [
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule,
+    SearchFieldComponent,
+    BreadcrumbComponent
+  ],
   templateUrl: './organe-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -94,12 +102,16 @@ export class OrganeListComponent implements OnInit {
   }
 
   openEdit(organe: Organe): void {
-    this.openDialog(organe);
+    this.openDialog(organe, false);
   }
 
-  private openDialog(organe: Organe | null): void {
+  openDetail(organe: Organe): void {
+    this.openDialog(organe, true);
+  }
+
+  private openDialog(organe: Organe | null, readOnly = false): void {
     this.dialogService
-      .open(OrganeFormComponent, { size: 'large', data: { organe } })
+      .open(OrganeFormComponent, { size: 'large', data: { organe, readOnly } })
       .afterClosed()
       .subscribe((saved) => {
         if (saved) {

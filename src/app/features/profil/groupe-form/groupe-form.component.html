@@ -2,6 +2,38 @@
 
 @if (loading()) {
   <app-dialog-loading [minHeight]="380" />
+} @else if (readOnly) {
+  <div class="dialog-body">
+    <div mat-dialog-content class="groupe-form__content">
+      <app-form-section label="Informations" icon="info_outline" />
+
+      <app-detail-field label="Nom" icon="badge" [value]="detailView()?.nom" />
+      <app-detail-field label="Description" icon="notes" [value]="detailView()?.description" />
+      <app-detail-field
+        label="Statut"
+        icon="toggle_on"
+        [value]="detailView()?.actif ? 'Actif' : 'Inactif'"
+        class="groupe-form__full"
+      />
+
+      <app-form-section label="Permissions" icon="lock_outline" />
+
+      <div class="groupe-form__permission-chips">
+        @for (name of selectedPermissionNames(); track name) {
+          <span class="groupe-form__permission-chip">{{ name }}</span>
+        } @empty {
+          <p class="groupe-form__empty">Aucune permission attribuée.</p>
+        }
+      </div>
+    </div>
+
+    <div mat-dialog-actions class="detail-actions">
+      <button mat-stroked-button type="button" class="detail-actions__close" (click)="cancel()">
+        <mat-icon>close</mat-icon>
+        <span>Fermer</span>
+      </button>
+    </div>
+  </div>
 } @else {
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <div mat-dialog-content class="groupe-form__content">

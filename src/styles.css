@@ -17,6 +17,18 @@ input:focus-visible,
   outline: none;
 }
 
+/* Popups "détail" (lecture seule) : le formulaire est désactivé (form.disable()) pour
+ * empêcher l'édition, mais Material grise fortement le texte par défaut, illisible.
+ * On garde le texte en pleine couleur et en gras pour un vrai rendu "fiche détail". */
+.mat-mdc-form-field.mat-form-field-disabled input.mat-mdc-input-element,
+.mat-mdc-form-field.mat-form-field-disabled .mat-mdc-select-value-text,
+.mat-mdc-checkbox-disabled .mdc-label {
+  color: var(--color-text-primary) !important;
+  -webkit-text-fill-color: var(--color-text-primary) !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
 /* Alignement du "primary" Material sur le vert de marque exact : le thème M3
    (custom-theme.scss) utilise mat.$green-palette, une teinte Material générique
    différente du hex de marque (--color-brand-500/600/700) déjà utilisé par les
@@ -165,54 +177,101 @@ input:focus-visible,
 }
 
 /* Popups (formulaires courts) : coins arrondis + ombre marquée cohérents avec les cartes de
-   l'app, au lieu du panneau anguleux par défaut de Material. */
+   l'app, au lieu du panneau anguleux par défaut de Material.
+ *
+ * Architecture à UN SEUL conteneur scrollable : la surface elle-même. Plusieurs tentatives
+ * précédentes avec un scroll réparti entre la surface ET mat-dialog-content (flex-grow,
+ * max-height, overflow-x seul...) provoquaient systématiquement un écart de 1-2px entre la
+ * hauteur "flex calculée" et la hauteur réellement rendue, faisant apparaître une scrollbar
+ * verticale fantôme même quand le contenu tient largement. En ne laissant QUE la surface
+ * gérer le scroll (et en empêchant mat-dialog-content de scroller lui-même), ce problème
+ * d'arrondi ne peut plus se produire : il n'y a plus qu'un seul calcul de hauteur. */
 .mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 16px !important;
   box-shadow: var(--shadow-lg) !important;
-  /* Le titre/header et les actions gardent leur taille naturelle, seul le contenu doit
-     grandir/rétrécir et scroller si besoin — sans ça, le host du composant (<app-organe-form>,
-     un simple bloc non flex) casse la distribution de hauteur et provoque un double scroll
-     (haut ET bas) au lieu d'un scroll propre limité au contenu. */
   display: flex !important;
   flex-direction: column !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.cdk-overlay-pane {
+  max-width: 95vw !important;
 }
 
 /* Le <form> de chaque popup (organe-form, groupe-form, fonction-form...) enveloppe le
    contenu et les actions : il doit lui aussi être flex pour transmettre l'espace disponible
    à mat-dialog-content plutôt que de le laisser grandir librement (form = display: block
-   par défaut). */
-.mat-mdc-dialog-container form {
+   par défaut). Les popups "détail" (lecture seule) n'ont pas de <form> — elles utilisent
+   .dialog-body pour bénéficier de la même distribution flex. */
+.mat-mdc-dialog-container form,
+.mat-mdc-dialog-container .dialog-body {
   display: flex;
   flex-direction: column;
-  min-height: 0;
 }
 
-/* app-dialog-header est lui aussi un enfant flex direct de la surface (sibling de <form>) :
-   il ne doit ni grandir ni rétrécir, seul le contenu du formulaire doit occuper l'espace
-   restant. */
-.mat-mdc-dialog-container app-dialog-header {
+/* app-dialog-header et les actions gardent leur taille naturelle ; seul mat-dialog-content
+   grandit avec le contenu (flex-grow) — le scroll, lui, ne se produit qu'au niveau de la
+   surface (ci-dessus), jamais ici. */
+.mat-mdc-dialog-container app-dialog-header,
+.mat-mdc-dialog-container .mat-mdc-dialog-title,
+.mat-mdc-dialog-container .mat-mdc-dialog-actions {
   flex-shrink: 0;
 }
 
 .mat-mdc-dialog-container .mat-mdc-dialog-content {
   padding: 0 1.75rem !important;
-  /* Material plafonne ce conteneur à 65vh par défaut, indépendamment de la hauteur réelle
-     de la popup — ça déclenchait un ascenseur même sur un formulaire court. On laisse le
-     flex de la popup (surface + form ci-dessus) décider de l'espace disponible : le contenu
-     grandit avec flex-grow et ne scrolle (overflow-y: auto, hérité de Material) que s'il
-     dépasse effectivement le maxHeight du panneau (DialogService). */
   flex: 1 1 auto !important;
-  min-height: 0 !important;
+  overflow: visible !important;
   max-height: none !important;
 }
 
 .mat-mdc-dialog-container .mat-mdc-dialog-title,
 .mat-mdc-dialog-container .mat-mdc-dialog-actions {
   padding: 1.5rem 1.75rem 0 !important;
-  flex-shrink: 0;
 }
 
 .mat-mdc-dialog-container .mat-mdc-dialog-actions {
-  padding: 1rem 1.75rem 1.5rem !important;
+  padding: 2rem 1.75rem 1.5rem !important;
+  margin-top: 1rem !important;
+  border-top: 1px solid var(--color-border);
   justify-content: space-between !important;
+}
+
+/* Popup "détail" (lecture seule) : un seul bouton "Fermer", centré plutôt que collé à
+   gauche par le justify-content:space-between prévu pour la paire Annuler/Valider, et en
+   contour neutre plutôt qu'en bleu plein — "Fermer" n'est pas une action de validation. */
+.mat-mdc-dialog-container .mat-mdc-dialog-actions.detail-actions {
+  justify-content: center !important;
+}
+
+.detail-actions__close {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 160px;
+  justify-content: center;
+  border-radius: 999px;
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.detail-actions__close mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+.detail-actions__close:hover {
+  border-color: var(--color-brand-500);
+  background-color: var(--color-brand-tint);
+  color: var(--color-brand-700);
 }

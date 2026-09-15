@@ -1,19 +1,43 @@
 .groupe-form__content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: start;
   column-gap: 1.25rem;
   row-gap: 1rem;
-  min-width: 360px;
   max-height: 60vh;
+  overflow-x: hidden;
   overflow-y: auto;
   padding-top: 0.25rem;
 }
 
 .groupe-form__content > app-form-section,
 .groupe-form__content > mat-checkbox,
-.groupe-form__content > fieldset {
+.groupe-form__content > fieldset,
+.groupe-form__content > .groupe-form__full,
+.groupe-form__content > .groupe-form__permission-chips {
   grid-column: 1 / -1;
+}
+
+.groupe-form__content app-detail-field {
+  display: block;
+  min-width: 0;
+}
+
+.groupe-form__permission-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.groupe-form__permission-chip {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: var(--color-brand-tint);
+  color: var(--color-brand-700);
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .groupe-form__permissions {

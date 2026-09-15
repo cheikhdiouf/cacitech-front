@@ -4,11 +4,6 @@
   gap: 0.75rem;
   padding: 0.65rem 1.5rem;
   background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-  position: sticky;
-  top: 0;
-  z-index: 20;
 }
 
 .navbar__menu-btn {
@@ -27,14 +22,16 @@
   background: transparent;
   cursor: pointer;
   padding: 0.3rem 0.5rem;
-  border-radius: 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
   font: inherit;
   color: var(--color-text-primary);
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .navbar__user:hover {
   background: var(--color-surface-muted);
+  border-color: var(--color-border);
 }
 
 .navbar__avatar {
@@ -61,7 +58,10 @@
 .navbar__username-name {
   font-size: 0.85rem;
   font-weight: 600;
+  max-width: 160px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .navbar__user-chevron {
@@ -78,7 +78,8 @@
 }
 
 @media (max-width: 640px) {
-  .navbar__username {
+  .navbar__username,
+  .navbar__user-chevron {
     display: none;
   }
 }

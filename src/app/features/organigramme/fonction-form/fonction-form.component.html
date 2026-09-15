@@ -1,28 +1,53 @@
 <app-dialog-header [title]="title" icon="work_outline" />
 
-<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-  <div mat-dialog-content class="fonction-form__content">
-    <app-form-section label="Informations" icon="info_outline" />
+@if (readOnly) {
+  <div class="dialog-body">
+    <div mat-dialog-content class="fonction-form__content">
+      <app-form-section label="Informations" icon="info_outline" />
 
-    <app-text-field
-      label="Poste"
-      icon="work_outline"
-      formControlName="fonction"
-      [required]="true"
-      [errorMessage]="fonction.invalid && fonction.touched ? 'Le poste est requis.' : null"
-    />
-    <app-text-field label="Abréviation" icon="short_text" formControlName="abreviation" />
-    <app-text-field
-      label="Description"
-      icon="notes"
-      formControlName="description"
-      class="fonction-form__full"
-    />
+      <app-detail-field label="Poste" icon="work_outline" [value]="detailView()?.fonction" />
+      <app-detail-field label="Abréviation" icon="short_text" [value]="detailView()?.abreviation" />
+      <app-detail-field
+        label="Description"
+        icon="notes"
+        [value]="detailView()?.description"
+        class="fonction-form__full"
+      />
+      <app-detail-field label="Statut" icon="toggle_on" [value]="detailView()?.actif ? 'Active' : 'Inactive'" />
+    </div>
 
-    <mat-checkbox formControlName="actif">Fonction active</mat-checkbox>
+    <div mat-dialog-actions class="detail-actions">
+      <button mat-stroked-button type="button" class="detail-actions__close" (click)="cancel()">
+        <mat-icon>close</mat-icon>
+        <span>Fermer</span>
+      </button>
+    </div>
   </div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div mat-dialog-content class="fonction-form__content">
+      <app-form-section label="Informations" icon="info_outline" />
 
-  <div mat-dialog-actions>
-    <app-form-actions [isEdit]="isEdit" [submitting]="isSubmitting()" (cancel)="cancel()" />
-  </div>
-</form>
+      <app-text-field
+        label="Poste"
+        icon="work_outline"
+        formControlName="fonction"
+        [required]="true"
+        [errorMessage]="fonction.invalid && fonction.touched ? 'Le poste est requis.' : null"
+      />
+      <app-text-field label="Abréviation" icon="short_text" formControlName="abreviation" />
+      <app-text-field
+        label="Description"
+        icon="notes"
+        formControlName="description"
+        class="fonction-form__full"
+      />
+
+      <mat-checkbox formControlName="actif">Fonction active</mat-checkbox>
+    </div>
+
+    <div mat-dialog-actions>
+      <app-form-actions [isEdit]="isEdit" [submitting]="isSubmitting()" (cancel)="cancel()" />
+    </div>
+  </form>
+}

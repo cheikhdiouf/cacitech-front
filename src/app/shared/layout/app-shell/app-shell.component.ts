@@ -2,14 +2,13 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { NavbarComponent } from '../navbar/navbar.component';
-import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 
 const SIDEBAR_COLLAPSED_KEY = 'cicatech.sidebar.collapsed';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, SidebarComponent, NavbarComponent, BreadcrumbComponent],
+  imports: [RouterOutlet, SidebarComponent, NavbarComponent],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.css'
 })

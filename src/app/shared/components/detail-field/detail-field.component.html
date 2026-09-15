@@ -1,0 +1,11 @@
+<div class="detail-field">
+  @if (icon) {
+    <span class="detail-field__icon">
+      <mat-icon>{{ icon }}</mat-icon>
+    </span>
+  }
+  <div class="detail-field__body">
+    <span class="detail-field__label">{{ label }}</span>
+    <span class="detail-field__value">{{ value || '—' }}</span>
+  </div>
+</div>
