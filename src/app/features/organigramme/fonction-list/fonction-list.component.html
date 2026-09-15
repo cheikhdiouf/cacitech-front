@@ -1,0 +1,65 @@
+<div class="fonction-list__header">
+  <h1>Fonctions</h1>
+  <button mat-flat-button color="primary" routerLink="nouveau">
+    <mat-icon>add</mat-icon>
+    Nouvelle fonction
+  </button>
+</div>
+
+<app-search-field
+  placeholder="Rechercher une fonction..."
+  [value]="search()"
+  (valueChange)="search.set($event)"
+/>
+
+@if (loading()) {
+  <div class="fonction-list__state">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+} @else if (error()) {
+  <div class="fonction-list__state fonction-list__state--error">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ error() }}</p>
+  </div>
+} @else {
+  <table class="fonction-list__table">
+    <thead>
+      <tr>
+        <th>Poste</th>
+        <th>Abréviation</th>
+        <th>Description</th>
+        <th>Statut</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (fonction of filteredFonctions(); track fonction.id) {
+        <tr>
+          <td>{{ fonction.fonction }}</td>
+          <td>{{ fonction.abreviation }}</td>
+          <td>{{ fonction.description }}</td>
+          <td>
+            <mat-slide-toggle
+              [checked]="fonction.actif"
+              (change)="onToggleActif(fonction.id)"
+              [aria-label]="fonction.actif ? 'Désactiver' : 'Activer'"
+            >
+              {{ fonction.actif ? 'Actif' : 'Inactif' }}
+            </mat-slide-toggle>
+          </td>
+          <td>
+            <button mat-icon-button [routerLink]="[fonction.id]" aria-label="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="fonction-list__empty">
+            {{ search() ? 'Aucune fonction ne correspond à votre recherche.' : 'Aucune fonction trouvée.' }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

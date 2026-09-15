@@ -1,0 +1,21 @@
+<mat-form-field appearance="outline" class="text-field">
+  <mat-label>{{ label }}</mat-label>
+  @if (icon) {
+    <mat-icon matPrefix>{{ icon }}</mat-icon>
+  }
+  <input
+    matInput
+    [type]="type"
+    [autocomplete]="autocomplete"
+    [required]="required"
+    [ngModel]="value"
+    [disabled]="disabled"
+    (ngModelChange)="handleInput($event)"
+    (blur)="markTouched()"
+  />
+  @if (errorMessage) {
+    <mat-error>{{ errorMessage }}</mat-error>
+  } @else if (hint) {
+    <mat-hint>{{ hint }}</mat-hint>
+  }
+</mat-form-field>

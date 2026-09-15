@@ -1,0 +1,39 @@
+<div class="fonction-form__header">
+  <a routerLink="/organigramme/fonctions" class="fonction-form__back" aria-label="Retour">
+    <mat-icon>arrow_back</mat-icon>
+  </a>
+  <h1>{{ isEdit ? 'Modifier la fonction' : 'Nouvelle fonction' }}</h1>
+</div>
+
+@if (loading()) {
+  <div class="fonction-form__state">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+} @else {
+  <form class="fonction-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-text-field
+      label="Poste"
+      formControlName="fonction"
+      [required]="true"
+      [errorMessage]="fonction.invalid && fonction.touched ? 'Le poste est requis.' : null"
+    />
+    <app-text-field label="Abréviation" formControlName="abreviation" />
+    <app-text-field label="Description" formControlName="description" />
+
+    <label class="fonction-form__actif">
+      <input type="checkbox" formControlName="actif" />
+      Fonction active
+    </label>
+
+    <div class="fonction-form__actions">
+      <button mat-button type="button" routerLink="/organigramme/fonctions">Annuler</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          <mat-spinner diameter="20" color="accent" />
+        } @else {
+          <span>{{ isEdit ? 'Enregistrer' : 'Créer' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+}

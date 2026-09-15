@@ -1,0 +1,11 @@
+<nav class="breadcrumb" aria-label="Fil d'Ariane">
+  <a routerLink="/accueil" class="breadcrumb__item breadcrumb__item--home" [class.breadcrumb__item--current]="!crumbs().length">
+    <mat-icon>home</mat-icon>
+    Accueil
+  </a>
+
+  @for (crumb of crumbs(); track crumb; let last = $last) {
+    <mat-icon class="breadcrumb__sep">chevron_right</mat-icon>
+    <span class="breadcrumb__item" [class.breadcrumb__item--current]="last">{{ crumb }}</span>
+  }
+</nav>

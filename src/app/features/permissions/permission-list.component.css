@@ -1,0 +1,38 @@
+.permission-list__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 40vh;
+  color: var(--color-text-muted);
+}
+
+.permission-list__state--error {
+  color: var(--color-error-text, #b91c1c);
+}
+
+.permission-list__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.permission-list__table th,
+.permission-list__table td {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.permission-list__table th {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.permission-list__empty {
+  text-align: center;
+  color: var(--color-text-muted);
+}

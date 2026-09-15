@@ -1,0 +1,51 @@
+/**
+ * Palette centralisée de l'application.
+ * Toute couleur utilisée dans les styles globaux ou les composants doit
+ * référencer une de ces variables plutôt qu'un code couleur en dur.
+ */
+:root {
+   /* Marque — indigo moderne, teinte de référence des UI ERP/CRM actuelles (Linear, Stripe,
+     Salesforce Lightning). */
+   --color-brand-500: #4f46e5;
+   --color-brand-600: #4338ca;
+   --color-brand-700: #3730a3;
+   --color-brand-tint: rgba(79, 70, 229, 0.1);
+
+   /* Neutres — échelle slate moderne (ERP/CRM : Salesforce Lightning, Linear, Odoo 17). */
+   --color-white: #ffffff;
+   --color-background: #f6f7f9;
+   --color-text-primary: #1c2230;
+   --color-text-muted: #8b93a1;
+
+   /* Sémantique - succès */
+   --color-success-bg: #e8f7ee;
+   --color-success-border: #b9e6c8;
+   --color-success-text: #14532d;
+   --color-success-solid: #16a34a;
+
+   /* Sémantique - erreur */
+   --color-error-bg: #fdecea;
+   --color-error-border: #f5c2c0;
+   --color-error-text: #7a1e1e;
+   --color-error-solid: #dc2626;
+
+   /* Layout applicatif (navbar) — thème clair uniquement */
+   --color-surface: #ffffff;
+   --color-surface-muted: #f2f3f6;
+   --color-border: #e3e6eb;
+
+   /* Sidebar — habillage clair et épuré (Linear, HubSpot, Salesforce Lightning) : fond blanc
+     plutôt qu'un aplat gris, juste une bordure fine pour séparer du contenu. */
+   --color-sidebar-bg: #ffffff;
+   --color-sidebar-bg-elevated: #f6f7f9;
+   --color-sidebar-bg-active: var(--color-brand-tint);
+   --color-sidebar-border: #edeef1;
+   --color-sidebar-accent: var(--color-brand-600);
+   --color-sidebar-text: #1c2230;
+   --color-sidebar-text-muted: #8b93a1;
+
+   /* Élévation */
+   --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+   --shadow-md: 0 4px 16px rgba(16, 24, 40, 0.07);
+   --shadow-lg: 0 14px 32px rgba(16, 24, 40, 0.12);
+}

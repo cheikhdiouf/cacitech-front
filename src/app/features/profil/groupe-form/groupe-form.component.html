@@ -1,0 +1,55 @@
+<div class="groupe-form__header">
+  <a routerLink="/profils/groupes" class="groupe-form__back" aria-label="Retour">
+    <mat-icon>arrow_back</mat-icon>
+  </a>
+  <h1>{{ isEdit ? 'Modifier le groupe' : 'Nouveau groupe' }}</h1>
+</div>
+
+@if (loading()) {
+  <div class="groupe-form__state">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+} @else {
+  <form class="groupe-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-text-field
+      label="Nom"
+      formControlName="nom"
+      [required]="true"
+      [errorMessage]="nom.invalid && nom.touched ? 'Le nom est requis.' : null"
+    />
+
+    <app-text-field label="Description" formControlName="description" />
+
+    <label class="groupe-form__actif">
+      <input type="checkbox" formControlName="actif" />
+      Groupe actif
+    </label>
+
+    <fieldset class="groupe-form__permissions">
+      <legend>Permissions</legend>
+      @for (permission of permissions(); track permission.id) {
+        <label class="groupe-form__permission">
+          <input
+            type="checkbox"
+            [checked]="isPermissionSelected(permission.id)"
+            (change)="togglePermission(permission.id, $any($event.target).checked)"
+          />
+          {{ permission.name }}
+        </label>
+      } @empty {
+        <p class="groupe-form__empty">Aucune permission disponible.</p>
+      }
+    </fieldset>
+
+    <div class="groupe-form__actions">
+      <button mat-button type="button" routerLink="/profils/groupes">Annuler</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          <mat-spinner diameter="20" color="accent" />
+        } @else {
+          <span>{{ isEdit ? 'Enregistrer' : 'Créer' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+}

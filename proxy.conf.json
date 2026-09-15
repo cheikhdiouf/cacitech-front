@@ -1,0 +1,26 @@
+{
+  "/api": {
+    "target": "https://test-backend.cacitech.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/parametrage": {
+    "target": "https://test-backend.cacitech.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/organigramme": {
+    "target": "https://test-backend.cacitech.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/profil": {
+    "target": "https://test-backend.cacitech.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

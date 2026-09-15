@@ -1,0 +1,24 @@
+<header class="navbar">
+  <button mat-icon-button class="navbar__menu-btn" (click)="menuToggle.emit()" aria-label="Basculer le menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <div class="navbar__spacer"></div>
+
+  <button class="navbar__user" [matMenuTriggerFor]="userMenu" type="button">
+    <span class="navbar__avatar">{{ userInitials() }}</span>
+    @if (user(); as u) {
+      <span class="navbar__username">
+        <span class="navbar__username-name">{{ u.username }}</span>
+      </span>
+    }
+    <mat-icon class="navbar__user-chevron">expand_more</mat-icon>
+  </button>
+
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Se déconnecter</span>
+    </button>
+  </mat-menu>
+</header>

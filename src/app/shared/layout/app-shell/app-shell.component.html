@@ -1,0 +1,21 @@
+<div class="app-shell">
+  <app-sidebar
+    [collapsed]="sidebarCollapsed()"
+    [mobileOpen]="mobileNavOpen()"
+    (toggleCollapse)="toggleSidebar()"
+    (navigate)="closeMobileNav()"
+  />
+
+  @if (mobileNavOpen()) {
+    <button type="button" class="app-shell__backdrop" aria-label="Fermer le menu" (click)="closeMobileNav()"></button>
+  }
+
+  <div class="app-shell__main">
+    <app-navbar (menuToggle)="toggleMobileNav()" />
+    <app-breadcrumb />
+
+    <main class="app-shell__content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

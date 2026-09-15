@@ -1,0 +1,67 @@
+<div class="organe-list__header">
+  <h1>Entités</h1>
+  <button mat-flat-button color="primary" routerLink="nouveau">
+    <mat-icon>add</mat-icon>
+    Nouvelle entité
+  </button>
+</div>
+
+<app-search-field
+  placeholder="Rechercher une entité..."
+  [value]="search()"
+  (valueChange)="search.set($event)"
+/>
+
+@if (loading()) {
+  <div class="organe-list__state">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+} @else if (error()) {
+  <div class="organe-list__state organe-list__state--error">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ error() }}</p>
+  </div>
+} @else {
+  <table class="organe-list__table">
+    <thead>
+      <tr>
+        <th>Entité</th>
+        <th>Abréviation</th>
+        <th>Tutelle</th>
+        <th>Niveau</th>
+        <th>Statut</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of filteredRows(); track row.organe.id) {
+        <tr>
+          <td>{{ row.organe.organe }}</td>
+          <td>{{ row.organe.abreviation }}</td>
+          <td>{{ row.tutelleLabel }}</td>
+          <td>{{ row.organe.niveau }}</td>
+          <td>
+            <mat-slide-toggle
+              [checked]="row.organe.actif"
+              (change)="onToggleActif(row.organe.id)"
+              [aria-label]="row.organe.actif ? 'Désactiver' : 'Activer'"
+            >
+              {{ row.organe.actif ? 'Actif' : 'Inactif' }}
+            </mat-slide-toggle>
+          </td>
+          <td>
+            <button mat-icon-button [routerLink]="[row.organe.id]" aria-label="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="organe-list__empty">
+            {{ search() ? 'Aucune entité ne correspond à votre recherche.' : 'Aucune entité trouvée.' }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

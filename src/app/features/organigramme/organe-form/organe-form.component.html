@@ -1,0 +1,63 @@
+<div class="organe-form__header">
+  <a routerLink="/organigramme/organes" class="organe-form__back" aria-label="Retour">
+    <mat-icon>arrow_back</mat-icon>
+  </a>
+  <h1>{{ isEdit ? "Modifier l'entité" : 'Nouvelle entité' }}</h1>
+</div>
+
+@if (loading()) {
+  <div class="organe-form__state">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+} @else {
+  <form class="organe-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-text-field
+      label="Entité (direction, service, ...)"
+      formControlName="organe"
+      [required]="true"
+      [errorMessage]="organe.invalid && organe.touched ? 'Le nom de l’entité est requis.' : null"
+    />
+    <app-text-field
+      label="Abréviation"
+      formControlName="abreviation"
+      [required]="true"
+      [errorMessage]="abreviation.invalid && abreviation.touched ? 'L’abréviation est requise.' : null"
+    />
+
+    <mat-form-field appearance="outline">
+      <mat-label>Tutelle</mat-label>
+      <mat-select formControlName="organe_superieure">
+        <mat-option [value]="''">Aucune</mat-option>
+        @for (organe of organesDisponibles(); track organe.id) {
+          <mat-option [value]="organe.id">{{ organe.organe }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Responsable</mat-label>
+      <mat-select formControlName="responsable">
+        <mat-option [value]="''">Aucun</mat-option>
+        @for (profil of profils(); track profil.id) {
+          <mat-option [value]="profil.id">{{ profil.prenom }} {{ profil.nom }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <label class="organe-form__actif">
+      <input type="checkbox" formControlName="actif" />
+      Entité active
+    </label>
+
+    <div class="organe-form__actions">
+      <button mat-button type="button" routerLink="/organigramme/organes">Annuler</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          <mat-spinner diameter="20" color="accent" />
+        } @else {
+          <span>{{ isEdit ? 'Enregistrer' : 'Créer' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+}

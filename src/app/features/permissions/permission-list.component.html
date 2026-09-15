@@ -1,0 +1,31 @@
+@if (loading()) {
+  <div class="permission-list__state">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+} @else if (error()) {
+  <div class="permission-list__state permission-list__state--error">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ error() }}</p>
+  </div>
+} @else {
+  <table class="permission-list__table">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Code</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (permission of permissions(); track permission.id) {
+        <tr>
+          <td>{{ permission.name }}</td>
+          <td>{{ permission.codename }}</td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="2" class="permission-list__empty">Aucune permission trouvée.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

@@ -1,0 +1,152 @@
+/* You can add global styles to this file, and also import other style files */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; color: var(--color-text-primary); }
+
+/* Supprime le contour de focus bleu par défaut du navigateur sur toute l'application. */
+a:focus,
+a:focus-visible,
+button:focus,
+button:focus-visible,
+input:focus,
+input:focus-visible,
+[tabindex]:focus,
+[tabindex]:focus-visible {
+  outline: none;
+}
+
+/* Alignement du "primary" Material sur le vert de marque exact : le thème M3
+   (custom-theme.scss) utilise mat.$green-palette, une teinte Material générique
+   différente du hex de marque (--color-brand-500/600/700) déjà utilisé par les
+   composants personnalisés. Plutôt que de régénérer toute la palette M3, on
+   surcharge ici les variables MDC exposées par les composants Material qui
+   utilisent color="primary" (boutons, cases à cocher, interrupteurs), pour que
+   la marque reste visuellement cohérente partout. */
+.mat-primary {
+  --mdc-filled-button-container-color: var(--color-brand-500);
+  --mdc-filled-button-label-text-color: var(--color-white);
+  --mdc-text-button-label-text-color: var(--color-brand-700);
+  --mdc-outlined-button-label-text-color: var(--color-brand-700);
+  --mdc-outlined-button-outline-color: var(--color-brand-500);
+  --mdc-checkbox-selected-icon-color: var(--color-brand-600);
+  --mdc-checkbox-selected-hover-icon-color: var(--color-brand-700);
+  --mdc-checkbox-selected-focus-icon-color: var(--color-brand-700);
+  --mdc-switch-selected-track-color: var(--color-brand-500);
+  --mdc-switch-selected-hover-track-color: var(--color-brand-600);
+  --mdc-switch-selected-handle-color: var(--color-brand-700);
+  --mdc-switch-selected-hover-handle-color: var(--color-brand-700);
+}
+
+.mat-mdc-unelevated-button.mat-primary:hover,
+.mat-mdc-raised-button.mat-primary:hover {
+  --mdc-filled-button-container-color: var(--color-brand-600);
+}
+
+/* ---- Écran de connexion ---- */
+
+.auth-card__header {
+  margin-bottom: 1.75rem;
+}
+
+.auth-card__header h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.auth-form mat-icon[matPrefix],
+.password-field mat-icon[matPrefix] {
+  margin-right: 0.5rem;
+  color: var(--color-text-muted);
+}
+
+.auth-form .mat-mdc-form-field,
+.password-field,
+.text-field {
+  --mdc-outlined-text-field-container-shape: 10px;
+}
+
+.auth-form__options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0.25rem 0 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.auth-submit {
+  width: 100%;
+  height: 44px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  /* Vert de marque, en surchargeant les variables MDC du bouton "flat" (sinon pilotées
+     par la palette Material générée, pas notre couleur de marque). */
+  --mdc-filled-button-container-color: var(--color-brand-500);
+  --mdc-filled-button-label-text-color: var(--color-white);
+}
+
+.auth-submit:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-submit {
+    transition: none;
+  }
+
+  .auth-submit:not(:disabled):hover {
+    transform: none;
+  }
+}
+
+/* Toasts : carte claire + liseré de couleur (au lieu d'un aplat saturé plein écran). */
+.app-snackbar-success,
+.app-snackbar-error {
+  --mdc-snackbar-supporting-text-color: var(--color-text-primary);
+}
+
+.app-snackbar-success .mdc-snackbar__surface,
+.app-snackbar-error .mdc-snackbar__surface {
+  border-radius: 10px !important;
+  border-left: 4px solid transparent;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.app-snackbar-success {
+  --mdc-snackbar-container-color: var(--color-success-bg);
+}
+
+.app-snackbar-success .mdc-snackbar__surface {
+  border-left-color: var(--color-success-solid);
+}
+
+.app-snackbar-success .mat-mdc-snack-bar-action {
+  color: var(--color-success-solid) !important;
+}
+
+.app-snackbar-error {
+  --mdc-snackbar-container-color: var(--color-error-bg);
+}
+
+.app-snackbar-error .mdc-snackbar__surface {
+  border-left-color: var(--color-error-solid);
+}
+
+.app-snackbar-error .mat-mdc-snack-bar-action {
+  color: var(--color-error-solid) !important;
+}
