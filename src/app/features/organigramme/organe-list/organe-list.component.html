@@ -1,28 +1,32 @@
-<div class="organe-list__header">
-  <h1>Entités</h1>
-  <button mat-flat-button color="primary" routerLink="nouveau">
+<div class="list-page__header">
+  <app-search-field
+    class="list-page__search"
+    placeholder="Rechercher une entité..."
+    [value]="search()"
+    (valueChange)="search.set($event)"
+  />
+  <button mat-flat-button color="primary" (click)="openCreate()">
     <mat-icon>add</mat-icon>
     Nouvelle entité
   </button>
 </div>
 
-<app-search-field
-  placeholder="Rechercher une entité..."
-  [value]="search()"
-  (valueChange)="search.set($event)"
-/>
-
 @if (loading()) {
-  <div class="organe-list__state">
+  <div class="list-page__state">
     <mat-spinner diameter="32"></mat-spinner>
   </div>
 } @else if (error()) {
-  <div class="organe-list__state organe-list__state--error">
+  <div class="list-page__state list-page__state--error">
     <mat-icon>error_outline</mat-icon>
     <p>{{ error() }}</p>
+    <button mat-stroked-button class="list-page__retry" (click)="load()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
   </div>
 } @else {
-  <table class="organe-list__table">
+  <div class="list-page__table-wrap">
+  <table class="list-page__table">
     <thead>
       <tr>
         <th>Entité</th>
@@ -35,12 +39,18 @@
     </thead>
     <tbody>
       @for (row of filteredRows(); track row.organe.id) {
-        <tr>
+        <tr
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'Modifier ' + row.organe.organe"
+          (click)="openEdit(row.organe)"
+          (keydown.enter)="openEdit(row.organe)"
+        >
           <td>{{ row.organe.organe }}</td>
           <td>{{ row.organe.abreviation }}</td>
           <td>{{ row.tutelleLabel }}</td>
           <td>{{ row.organe.niveau }}</td>
-          <td>
+          <td (click)="$event.stopPropagation()">
             <mat-slide-toggle
               [checked]="row.organe.actif"
               (change)="onToggleActif(row.organe.id)"
@@ -50,18 +60,19 @@
             </mat-slide-toggle>
           </td>
           <td>
-            <button mat-icon-button [routerLink]="[row.organe.id]" aria-label="Modifier">
+            <button mat-icon-button (click)="$event.stopPropagation(); openEdit(row.organe)" aria-label="Modifier">
               <mat-icon>edit</mat-icon>
             </button>
           </td>
         </tr>
       } @empty {
         <tr>
-          <td colspan="6" class="organe-list__empty">
+          <td colspan="6" class="list-page__empty">
             {{ search() ? 'Aucune entité ne correspond à votre recherche.' : 'Aucune entité trouvée.' }}
           </td>
         </tr>
       }
     </tbody>
   </table>
+  </div>
 }

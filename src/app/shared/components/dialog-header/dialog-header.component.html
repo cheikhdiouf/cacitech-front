@@ -1,0 +1,11 @@
+<div mat-dialog-title class="dialog-header">
+  <span class="dialog-header__heading">
+    @if (icon) {
+      <mat-icon class="dialog-header__icon">{{ icon }}</mat-icon>
+    }
+    <span class="dialog-header__title">{{ title }}</span>
+  </span>
+  <button mat-icon-button type="button" class="dialog-header__close" (click)="close()" aria-label="Fermer">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>

@@ -1,31 +1,48 @@
+<div class="list-page__header">
+  <app-search-field
+    class="list-page__search"
+    placeholder="Rechercher une permission..."
+    [value]="search()"
+    (valueChange)="search.set($event)"
+  />
+</div>
+
 @if (loading()) {
-  <div class="permission-list__state">
+  <div class="list-page__state">
     <mat-spinner diameter="32"></mat-spinner>
   </div>
 } @else if (error()) {
-  <div class="permission-list__state permission-list__state--error">
+  <div class="list-page__state list-page__state--error">
     <mat-icon>error_outline</mat-icon>
     <p>{{ error() }}</p>
+    <button mat-stroked-button class="list-page__retry" (click)="load()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
   </div>
 } @else {
-  <table class="permission-list__table">
-    <thead>
-      <tr>
-        <th>Nom</th>
-        <th>Code</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (permission of permissions(); track permission.id) {
+  <div class="list-page__table-wrap">
+    <table class="list-page__table">
+      <thead>
         <tr>
-          <td>{{ permission.name }}</td>
-          <td>{{ permission.codename }}</td>
+          <th>Nom</th>
+          <th>Code</th>
         </tr>
-      } @empty {
-        <tr>
-          <td colspan="2" class="permission-list__empty">Aucune permission trouvée.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @for (permission of filteredPermissions(); track permission.id) {
+          <tr>
+            <td>{{ permission.name }}</td>
+            <td>{{ permission.codename }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="2" class="list-page__empty">
+              {{ search() ? 'Aucune permission ne correspond à votre recherche.' : 'Aucune permission trouvée.' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 }

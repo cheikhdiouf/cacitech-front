@@ -1,6 +1,8 @@
 import { WritableSignal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { NotificationService } from '../services/notification.service';
+import { DialogService } from '../../shared/services/dialog.service';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
 interface ToggleActifOptions<T extends { id: string; actif: boolean }> {
   items: WritableSignal<T[]>;
@@ -9,6 +11,11 @@ interface ToggleActifOptions<T extends { id: string; actif: boolean }> {
   notification: NotificationService;
   labelActivated: string;
   labelDeactivated: string;
+  /** Quand fourni, une popup de confirmation s'affiche avant toute désactivation
+   * (pas avant une activation, non destructive) — évite qu'un clic accidentel sur le
+   * toggle désactive un enregistrement potentiellement référencé ailleurs. */
+  dialogService?: DialogService;
+  confirmDeactivate?: { title: string; message: string };
 }
 
 /**
@@ -22,7 +29,9 @@ export function toggleActif<T extends { id: string; actif: boolean }>({
   patch,
   notification,
   labelActivated,
-  labelDeactivated
+  labelDeactivated,
+  dialogService,
+  confirmDeactivate
 }: ToggleActifOptions<T>): void {
   const current = items().find((item) => item.id === id);
   if (!current) {
@@ -30,13 +39,39 @@ export function toggleActif<T extends { id: string; actif: boolean }>({
   }
 
   const next = !current.actif;
-  items.update((list) => list.map((item) => (item.id === id ? { ...item, actif: next } : item)));
 
-  patch(id, { actif: next }).subscribe({
-    next: () => notification.success(next ? labelActivated : labelDeactivated),
-    error: () => {
-      items.update((list) => list.map((item) => (item.id === id ? { ...item, actif: !next } : item)));
-      notification.error('Impossible de mettre à jour le statut. Veuillez réessayer.');
-    }
-  });
+  const apply = (): void => {
+    items.update((list) => list.map((item) => (item.id === id ? { ...item, actif: next } : item)));
+
+    patch(id, { actif: next }).subscribe({
+      next: () => notification.success(next ? labelActivated : labelDeactivated),
+      error: () => {
+        items.update((list) => list.map((item) => (item.id === id ? { ...item, actif: !next } : item)));
+        notification.error('Impossible de mettre à jour le statut. Veuillez réessayer.');
+      }
+    });
+  };
+
+  if (!next && dialogService && confirmDeactivate) {
+    dialogService
+      .open(ConfirmDialogComponent, {
+        size: 'small',
+        data: {
+          title: confirmDeactivate.title,
+          message: confirmDeactivate.message,
+          confirmLabel: 'Désactiver',
+          icon: 'toggle_off',
+          destructive: true
+        }
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          apply();
+        }
+      });
+    return;
+  }
+
+  apply();
 }

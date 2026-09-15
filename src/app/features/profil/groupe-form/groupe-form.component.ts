@@ -1,28 +1,34 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatIconModule } from '@angular/material/icon';
-import { forkJoin } from 'rxjs';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ProfilService } from '../../../core/services/profil.service';
 import { PermissionService } from '../../../core/services/permission.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Permission } from '../../../core/models/permission.models';
+import { Groupe } from '../../../core/models/groupe.models';
 import { TextFieldComponent } from '../../../shared/components/text-field/text-field.component';
+import { FormActionsComponent } from '../../../shared/components/form-actions/form-actions.component';
+import { DialogLoadingComponent } from '../../../shared/components/dialog-loading/dialog-loading.component';
+import { DialogHeaderComponent } from '../../../shared/components/dialog-header/dialog-header.component';
+import { FormSectionComponent } from '../../../shared/components/form-section/form-section.component';
+
+export interface GroupeFormDialogData {
+  groupe: Groupe | null;
+}
 
 @Component({
   selector: 'app-groupe-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    RouterLink,
-    MatButtonModule,
     MatCheckboxModule,
-    MatProgressSpinnerModule,
-    MatIconModule,
-    TextFieldComponent
+    MatDialogModule,
+    TextFieldComponent,
+    FormActionsComponent,
+    DialogLoadingComponent,
+    DialogHeaderComponent,
+    FormSectionComponent
   ],
   templateUrl: './groupe-form.component.html',
   styleUrl: './groupe-form.component.css',
@@ -33,24 +39,25 @@ export class GroupeFormComponent implements OnInit {
   private readonly profilService = inject(ProfilService);
   private readonly permissionService = inject(PermissionService);
   private readonly notification = inject(NotificationService);
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
+  private readonly dialogRef = inject(MatDialogRef<GroupeFormComponent, boolean>);
+  private readonly data = inject<GroupeFormDialogData>(MAT_DIALOG_DATA);
 
-  private readonly groupeId = this.route.snapshot.paramMap.get('id');
+  private readonly groupeId = this.data.groupe?.id ?? null;
   readonly isEdit = this.groupeId !== null;
+  readonly title = this.isEdit ? 'Modifier le groupe' : 'Nouveau groupe';
 
   readonly loading = signal(true);
   readonly isSubmitting = signal(false);
   readonly permissions = signal<Permission[]>([]);
 
   /** Reflète les permissions cochées en O(1) — évite un includes() par ligne à chaque rendu. */
-  readonly selectedPermissionIds = signal<Set<number>>(new Set());
+  readonly selectedPermissionIds = signal<Set<number>>(new Set(this.data.groupe?.permissions ?? []));
 
   readonly form = this.fb.nonNullable.group({
-    nom: ['', [Validators.required]],
-    description: [''],
-    actif: [true],
-    permissions: this.fb.nonNullable.control<number[]>([])
+    nom: [this.data.groupe?.nom ?? '', [Validators.required]],
+    description: [this.data.groupe?.description ?? ''],
+    actif: [this.data.groupe?.actif ?? true],
+    permissions: this.fb.nonNullable.control<number[]>(this.data.groupe?.permissions ?? [])
   });
 
   get nom() {
@@ -58,38 +65,16 @@ export class GroupeFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const permissions$ = this.permissionService.listPermissions();
-
-    if (this.isEdit) {
-      forkJoin([permissions$, this.profilService.detailGroupe(this.groupeId!)]).subscribe({
-        next: ([permissions, groupe]) => {
-          this.permissions.set(permissions);
-          this.form.patchValue({
-            nom: groupe.nom,
-            description: groupe.description,
-            actif: groupe.actif,
-            permissions: groupe.permissions
-          });
-          this.selectedPermissionIds.set(new Set(groupe.permissions));
-          this.loading.set(false);
-        },
-        error: () => {
-          this.notification.error('Impossible de charger le groupe.');
-          this.loading.set(false);
-        }
-      });
-    } else {
-      permissions$.subscribe({
-        next: (permissions) => {
-          this.permissions.set(permissions);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.notification.error('Impossible de charger les permissions.');
-          this.loading.set(false);
-        }
-      });
-    }
+    this.permissionService.listPermissions().subscribe({
+      next: (permissions) => {
+        this.permissions.set(permissions);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.notification.error('Impossible de charger les permissions.');
+        this.loading.set(false);
+      }
+    });
   }
 
   isPermissionSelected(id: number): boolean {
@@ -105,6 +90,10 @@ export class GroupeFormComponent implements OnInit {
     }
     this.selectedPermissionIds.set(next);
     this.form.controls.permissions.setValue(Array.from(next));
+  }
+
+  cancel(): void {
+    this.dialogRef.close(false);
   }
 
   submit(): void {
@@ -124,7 +113,7 @@ export class GroupeFormComponent implements OnInit {
       next: () => {
         this.isSubmitting.set(false);
         this.notification.success(this.isEdit ? 'Groupe mis à jour.' : 'Groupe créé.');
-        this.router.navigate(['/profils/groupes']);
+        this.dialogRef.close(true);
       },
       error: () => {
         this.isSubmitting.set(false);

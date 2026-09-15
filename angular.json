@@ -28,6 +28,8 @@
             ],
             "styles": [
               "src/styles/colors.css",
+              "src/styles/list-page.css",
+              "src/styles/form-page.css",
               "src/custom-theme.scss",
               "src/styles.css"
             ],
@@ -102,6 +104,8 @@
             ],
             "styles": [
               "src/styles/colors.css",
+              "src/styles/list-page.css",
+              "src/styles/form-page.css",
               "src/styles.css"
             ],
             "scripts": []

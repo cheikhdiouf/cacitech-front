@@ -1,55 +1,43 @@
-<div class="groupe-form__header">
-  <a routerLink="/profils/groupes" class="groupe-form__back" aria-label="Retour">
-    <mat-icon>arrow_back</mat-icon>
-  </a>
-  <h1>{{ isEdit ? 'Modifier le groupe' : 'Nouveau groupe' }}</h1>
-</div>
+<app-dialog-header [title]="title" icon="group" />
 
 @if (loading()) {
-  <div class="groupe-form__state">
-    <mat-spinner diameter="32"></mat-spinner>
-  </div>
+  <app-dialog-loading [minHeight]="380" />
 } @else {
-  <form class="groupe-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <app-text-field
-      label="Nom"
-      formControlName="nom"
-      [required]="true"
-      [errorMessage]="nom.invalid && nom.touched ? 'Le nom est requis.' : null"
-    />
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div mat-dialog-content class="groupe-form__content">
+      <app-form-section label="Informations" icon="info_outline" />
 
-    <app-text-field label="Description" formControlName="description" />
+      <app-text-field
+        label="Nom"
+        icon="badge"
+        formControlName="nom"
+        [required]="true"
+        [errorMessage]="nom.invalid && nom.touched ? 'Le nom est requis.' : null"
+      />
 
-    <label class="groupe-form__actif">
-      <input type="checkbox" formControlName="actif" />
-      Groupe actif
-    </label>
+      <app-text-field label="Description" icon="notes" formControlName="description" />
 
-    <fieldset class="groupe-form__permissions">
-      <legend>Permissions</legend>
-      @for (permission of permissions(); track permission.id) {
-        <label class="groupe-form__permission">
-          <input
-            type="checkbox"
+      <mat-checkbox formControlName="actif">Groupe actif</mat-checkbox>
+
+      <app-form-section label="Permissions" icon="lock_outline" />
+
+      <fieldset class="groupe-form__permissions">
+        @for (permission of permissions(); track permission.id) {
+          <mat-checkbox
+            class="groupe-form__permission"
             [checked]="isPermissionSelected(permission.id)"
-            (change)="togglePermission(permission.id, $any($event.target).checked)"
-          />
-          {{ permission.name }}
-        </label>
-      } @empty {
-        <p class="groupe-form__empty">Aucune permission disponible.</p>
-      }
-    </fieldset>
-
-    <div class="groupe-form__actions">
-      <button mat-button type="button" routerLink="/profils/groupes">Annuler</button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting()">
-        @if (isSubmitting()) {
-          <mat-spinner diameter="20" color="accent" />
-        } @else {
-          <span>{{ isEdit ? 'Enregistrer' : 'Créer' }}</span>
+            (change)="togglePermission(permission.id, $event.checked)"
+          >
+            {{ permission.name }}
+          </mat-checkbox>
+        } @empty {
+          <p class="groupe-form__empty">Aucune permission disponible.</p>
         }
-      </button>
+      </fieldset>
+    </div>
+
+    <div mat-dialog-actions>
+      <app-form-actions [isEdit]="isEdit" [submitting]="isSubmitting()" (cancel)="cancel()" />
     </div>
   </form>
 }

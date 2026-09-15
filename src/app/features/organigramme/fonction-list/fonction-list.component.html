@@ -1,28 +1,32 @@
-<div class="fonction-list__header">
-  <h1>Fonctions</h1>
-  <button mat-flat-button color="primary" routerLink="nouveau">
+<div class="list-page__header">
+  <app-search-field
+    class="list-page__search"
+    placeholder="Rechercher une fonction..."
+    [value]="search()"
+    (valueChange)="search.set($event)"
+  />
+  <button mat-flat-button color="primary" (click)="openCreate()">
     <mat-icon>add</mat-icon>
     Nouvelle fonction
   </button>
 </div>
 
-<app-search-field
-  placeholder="Rechercher une fonction..."
-  [value]="search()"
-  (valueChange)="search.set($event)"
-/>
-
 @if (loading()) {
-  <div class="fonction-list__state">
+  <div class="list-page__state">
     <mat-spinner diameter="32"></mat-spinner>
   </div>
 } @else if (error()) {
-  <div class="fonction-list__state fonction-list__state--error">
+  <div class="list-page__state list-page__state--error">
     <mat-icon>error_outline</mat-icon>
     <p>{{ error() }}</p>
+    <button mat-stroked-button class="list-page__retry" (click)="load()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
   </div>
 } @else {
-  <table class="fonction-list__table">
+  <div class="list-page__table-wrap">
+  <table class="list-page__table">
     <thead>
       <tr>
         <th>Poste</th>
@@ -34,11 +38,17 @@
     </thead>
     <tbody>
       @for (fonction of filteredFonctions(); track fonction.id) {
-        <tr>
+        <tr
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'Modifier ' + fonction.fonction"
+          (click)="openEdit(fonction)"
+          (keydown.enter)="openEdit(fonction)"
+        >
           <td>{{ fonction.fonction }}</td>
           <td>{{ fonction.abreviation }}</td>
           <td>{{ fonction.description }}</td>
-          <td>
+          <td (click)="$event.stopPropagation()">
             <mat-slide-toggle
               [checked]="fonction.actif"
               (change)="onToggleActif(fonction.id)"
@@ -48,18 +58,19 @@
             </mat-slide-toggle>
           </td>
           <td>
-            <button mat-icon-button [routerLink]="[fonction.id]" aria-label="Modifier">
+            <button mat-icon-button (click)="$event.stopPropagation(); openEdit(fonction)" aria-label="Modifier">
               <mat-icon>edit</mat-icon>
             </button>
           </td>
         </tr>
       } @empty {
         <tr>
-          <td colspan="5" class="fonction-list__empty">
+          <td colspan="5" class="list-page__empty">
             {{ search() ? 'Aucune fonction ne correspond à votre recherche.' : 'Aucune fonction trouvée.' }}
           </td>
         </tr>
       }
     </tbody>
   </table>
+  </div>
 }

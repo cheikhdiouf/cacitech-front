@@ -22,100 +22,52 @@ export const routes: Routes = [
         path: 'permissions',
         loadComponent: () =>
           import('./features/permissions/permission-list.component').then((m) => m.PermissionListComponent),
-        title: 'Cacitech'
+        title: 'Cacitech',
+        data: { breadcrumb: ['Paramétrage', 'Permissions'] }
       },
       {
         path: 'profils/groupes',
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./features/profil/groupe-list/groupe-list.component').then((m) => m.GroupeListComponent),
-            title: 'Cacitech'
-          },
-          {
-            path: 'nouveau',
-            loadComponent: () =>
-              import('./features/profil/groupe-form/groupe-form.component').then((m) => m.GroupeFormComponent),
-            title: 'Cacitech'
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import('./features/profil/groupe-form/groupe-form.component').then((m) => m.GroupeFormComponent),
-            title: 'Cacitech'
-          }
-        ]
+        loadComponent: () =>
+          import('./features/profil/groupe-list/groupe-list.component').then((m) => m.GroupeListComponent),
+        title: 'Cacitech',
+        data: { breadcrumb: ['Paramétrage', 'Groupes'] }
       },
       {
         path: 'profils/nouveau',
         loadComponent: () =>
           import('./features/profil/profil-form/profil-form.component').then((m) => m.ProfilFormComponent),
-        title: 'Cacitech'
+        title: 'Cacitech',
+        data: { breadcrumb: ['Paramétrage', 'Profils', 'Nouveau'] }
       },
       {
         path: 'profils/:id',
         loadComponent: () =>
           import('./features/profil/profil-form/profil-form.component').then((m) => m.ProfilFormComponent),
-        title: 'Cacitech'
+        title: 'Cacitech',
+        data: { breadcrumb: ['Paramétrage', 'Profils', 'Modifier'] }
       },
       {
         path: 'profils',
         loadComponent: () =>
           import('./features/profil/profil-list/profil-list.component').then((m) => m.ProfilListComponent),
-        title: 'Cacitech'
+        title: 'Cacitech',
+        data: { breadcrumb: ['Paramétrage', 'Profils'] }
       },
       {
         path: 'organigramme/fonctions',
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./features/organigramme/fonction-list/fonction-list.component').then(
-                (m) => m.FonctionListComponent
-              ),
-            title: 'Cacitech'
-          },
-          {
-            path: 'nouveau',
-            loadComponent: () =>
-              import('./features/organigramme/fonction-form/fonction-form.component').then(
-                (m) => m.FonctionFormComponent
-              ),
-            title: 'Cacitech'
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import('./features/organigramme/fonction-form/fonction-form.component').then(
-                (m) => m.FonctionFormComponent
-              ),
-            title: 'Cacitech'
-          }
-        ]
+        loadComponent: () =>
+          import('./features/organigramme/fonction-list/fonction-list.component').then(
+            (m) => m.FonctionListComponent
+          ),
+        title: 'Cacitech',
+        data: { breadcrumb: ['Organigramme', 'Fonctions'] }
       },
       {
         path: 'organigramme/organes',
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./features/organigramme/organe-list/organe-list.component').then((m) => m.OrganeListComponent),
-            title: 'Cacitech'
-          },
-          {
-            path: 'nouveau',
-            loadComponent: () =>
-              import('./features/organigramme/organe-form/organe-form.component').then((m) => m.OrganeFormComponent),
-            title: 'Cacitech'
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import('./features/organigramme/organe-form/organe-form.component').then((m) => m.OrganeFormComponent),
-            title: 'Cacitech'
-          }
-        ]
+        loadComponent: () =>
+          import('./features/organigramme/organe-list/organe-list.component').then((m) => m.OrganeListComponent),
+        title: 'Cacitech',
+        data: { breadcrumb: ['Organigramme', 'Entités'] }
       }
     ]
   },

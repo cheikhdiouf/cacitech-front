@@ -1,5 +1,48 @@
-<div class="home">
-  <mat-icon class="home__icon" aria-hidden="true">construction</mat-icon>
-  <h1>Écran en cours de développement</h1>
-  <p>Cette page sera bientôt disponible.</p>
+<div class="home__header">
+  <h1>Bonjour{{ username() ? ', ' + username() : '' }}</h1>
+  <p>Vue d'ensemble de votre organisation.</p>
 </div>
+
+@if (loading()) {
+  <div class="home__state">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+} @else if (error()) {
+  <div class="home__state home__state--error">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ error() }}</p>
+    <button mat-stroked-button (click)="load()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
+  </div>
+} @else {
+  <div class="home__kpis">
+    @for (kpi of kpis(); track kpi.label) {
+      <a class="home__kpi-card" [routerLink]="kpi.route">
+        <span class="home__kpi-icon">
+          <mat-icon>{{ kpi.icon }}</mat-icon>
+        </span>
+        <span class="home__kpi-body">
+          <span class="home__kpi-value">{{ kpi.total }}</span>
+          <span class="home__kpi-label">{{ kpi.label }}</span>
+          @if (kpi.actif !== kpi.total) {
+            <span class="home__kpi-sub">{{ kpi.actif }} actif(s)</span>
+          }
+        </span>
+      </a>
+    }
+  </div>
+
+  <div class="home__section">
+    <h2>Actions rapides</h2>
+    <div class="home__actions">
+      @for (action of quickActions; track action.label) {
+        <button mat-flat-button color="primary" class="home__action" [routerLink]="action.route">
+          <mat-icon>{{ action.icon }}</mat-icon>
+          {{ action.label }}
+        </button>
+      }
+    </div>
+  </div>
+}

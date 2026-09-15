@@ -1,28 +1,32 @@
-<div class="groupe-list__header">
-  <h1>Groupes</h1>
-  <button mat-flat-button color="primary" routerLink="nouveau">
+<div class="list-page__header">
+  <app-search-field
+    class="list-page__search"
+    placeholder="Rechercher un groupe..."
+    [value]="search()"
+    (valueChange)="search.set($event)"
+  />
+  <button mat-flat-button color="primary" (click)="openCreate()">
     <mat-icon>add</mat-icon>
     Nouveau groupe
   </button>
 </div>
 
-<app-search-field
-  placeholder="Rechercher un groupe..."
-  [value]="search()"
-  (valueChange)="search.set($event)"
-/>
-
 @if (loading()) {
-  <div class="groupe-list__state">
+  <div class="list-page__state">
     <mat-spinner diameter="32"></mat-spinner>
   </div>
 } @else if (error()) {
-  <div class="groupe-list__state groupe-list__state--error">
+  <div class="list-page__state list-page__state--error">
     <mat-icon>error_outline</mat-icon>
     <p>{{ error() }}</p>
+    <button mat-stroked-button class="list-page__retry" (click)="load()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
   </div>
 } @else {
-  <table class="groupe-list__table">
+  <div class="list-page__table-wrap">
+  <table class="list-page__table">
     <thead>
       <tr>
         <th>Nom</th>
@@ -34,11 +38,17 @@
     </thead>
     <tbody>
       @for (groupe of filteredGroupes(); track groupe.id) {
-        <tr>
+        <tr
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'Modifier ' + groupe.nom"
+          (click)="openEdit(groupe)"
+          (keydown.enter)="openEdit(groupe)"
+        >
           <td>{{ groupe.nom }}</td>
           <td>{{ groupe.description }}</td>
           <td>{{ groupe.permissions.length }}</td>
-          <td>
+          <td (click)="$event.stopPropagation()">
             <mat-slide-toggle
               [checked]="groupe.actif"
               (change)="onToggleActif(groupe.id)"
@@ -48,18 +58,19 @@
             </mat-slide-toggle>
           </td>
           <td>
-            <button mat-icon-button [routerLink]="[groupe.id]" aria-label="Modifier">
+            <button mat-icon-button (click)="$event.stopPropagation(); openEdit(groupe)" aria-label="Modifier">
               <mat-icon>edit</mat-icon>
             </button>
           </td>
         </tr>
       } @empty {
         <tr>
-          <td colspan="5" class="groupe-list__empty">
+          <td colspan="5" class="list-page__empty">
             {{ search() ? 'Aucun groupe ne correspond à votre recherche.' : 'Aucun groupe trouvé.' }}
           </td>
         </tr>
       }
     </tbody>
   </table>
+  </div>
 }

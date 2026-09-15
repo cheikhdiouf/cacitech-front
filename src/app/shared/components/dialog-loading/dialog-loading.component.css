@@ -1,0 +1,12 @@
+.dialog-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 360px;
+}
+
+@media (max-width: 480px) {
+  .dialog-loading {
+    min-width: 0;
+  }
+}

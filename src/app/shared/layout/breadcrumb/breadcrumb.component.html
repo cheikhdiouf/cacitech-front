@@ -5,7 +5,7 @@
   </a>
 
   @for (crumb of crumbs(); track crumb; let last = $last) {
-    <mat-icon class="breadcrumb__sep">chevron_right</mat-icon>
+    <span class="breadcrumb__sep">/</span>
     <span class="breadcrumb__item" [class.breadcrumb__item--current]="last">{{ crumb }}</span>
   }
 </nav>

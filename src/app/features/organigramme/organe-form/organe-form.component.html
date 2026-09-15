@@ -1,63 +1,54 @@
-<div class="organe-form__header">
-  <a routerLink="/organigramme/organes" class="organe-form__back" aria-label="Retour">
-    <mat-icon>arrow_back</mat-icon>
-  </a>
-  <h1>{{ isEdit ? "Modifier l'entité" : 'Nouvelle entité' }}</h1>
-</div>
+<app-dialog-header [title]="title" icon="apartment" />
 
 @if (loading()) {
-  <div class="organe-form__state">
-    <mat-spinner diameter="32"></mat-spinner>
-  </div>
+  <app-dialog-loading [minHeight]="430" />
 } @else {
-  <form class="organe-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <app-text-field
-      label="Entité (direction, service, ...)"
-      formControlName="organe"
-      [required]="true"
-      [errorMessage]="organe.invalid && organe.touched ? 'Le nom de l’entité est requis.' : null"
-    />
-    <app-text-field
-      label="Abréviation"
-      formControlName="abreviation"
-      [required]="true"
-      [errorMessage]="abreviation.invalid && abreviation.touched ? 'L’abréviation est requise.' : null"
-    />
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div mat-dialog-content class="organe-form__content">
+      <app-form-section label="Informations" icon="info_outline" />
 
-    <mat-form-field appearance="outline">
-      <mat-label>Tutelle</mat-label>
-      <mat-select formControlName="organe_superieure">
-        <mat-option [value]="''">Aucune</mat-option>
-        @for (organe of organesDisponibles(); track organe.id) {
-          <mat-option [value]="organe.id">{{ organe.organe }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+      <app-text-field
+        label="Entité (direction, service, ...)"
+        icon="apartment"
+        formControlName="organe"
+        [required]="true"
+        [errorMessage]="organe.invalid && organe.touched ? 'Le nom de l’entité est requis.' : null"
+      />
+      <app-text-field
+        label="Abréviation"
+        icon="short_text"
+        formControlName="abreviation"
+        [required]="true"
+        [errorMessage]="abreviation.invalid && abreviation.touched ? 'L’abréviation est requise.' : null"
+      />
 
-    <mat-form-field appearance="outline">
-      <mat-label>Responsable</mat-label>
-      <mat-select formControlName="responsable">
-        <mat-option [value]="''">Aucun</mat-option>
-        @for (profil of profils(); track profil.id) {
-          <mat-option [value]="profil.id">{{ profil.prenom }} {{ profil.nom }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+      <app-form-section label="Rattachement" icon="account_tree" />
 
-    <label class="organe-form__actif">
-      <input type="checkbox" formControlName="actif" />
-      Entité active
-    </label>
+      <mat-form-field appearance="outline">
+        <mat-label>Tutelle</mat-label>
+        <mat-select formControlName="organe_superieure">
+          <mat-option [value]="''">Aucune</mat-option>
+          @for (organe of organesDisponibles(); track organe.id) {
+            <mat-option [value]="organe.id">{{ organe.organe }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
-    <div class="organe-form__actions">
-      <button mat-button type="button" routerLink="/organigramme/organes">Annuler</button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting()">
-        @if (isSubmitting()) {
-          <mat-spinner diameter="20" color="accent" />
-        } @else {
-          <span>{{ isEdit ? 'Enregistrer' : 'Créer' }}</span>
-        }
-      </button>
+      <mat-form-field appearance="outline">
+        <mat-label>Responsable</mat-label>
+        <mat-select formControlName="responsable">
+          <mat-option [value]="''">Aucun</mat-option>
+          @for (profil of profils(); track profil.id) {
+            <mat-option [value]="profil.id">{{ profil.prenom }} {{ profil.nom }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-checkbox formControlName="actif">Entité active</mat-checkbox>
+    </div>
+
+    <div mat-dialog-actions>
+      <app-form-actions [isEdit]="isEdit" [submitting]="isSubmitting()" (cancel)="cancel()" />
     </div>
   </form>
 }

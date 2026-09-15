@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { forkJoin } from 'rxjs';
 import { ProfilService } from '../../../core/services/profil.service';
 import { OrganigrammeService } from '../../../core/services/organigramme.service';
@@ -13,6 +13,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Fonction, Organe } from '../../../core/models/organigramme.models';
 import { Groupe } from '../../../core/models/groupe.models';
 import { TextFieldComponent } from '../../../shared/components/text-field/text-field.component';
+import { FormActionsComponent } from '../../../shared/components/form-actions/form-actions.component';
 
 const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
@@ -23,12 +24,13 @@ const ALLOWED_PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
   imports: [
     ReactiveFormsModule,
     RouterLink,
-    MatButtonModule,
     MatProgressSpinnerModule,
     MatIconModule,
     MatFormFieldModule,
     MatSelectModule,
-    TextFieldComponent
+    MatCheckboxModule,
+    TextFieldComponent,
+    FormActionsComponent
   ],
   templateUrl: './profil-form.component.html',
   styleUrl: './profil-form.component.css',
@@ -158,6 +160,10 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.revokeObjectUrl();
+  }
+
+  cancel(): void {
+    this.router.navigate(['/profils']);
   }
 
   private revokeObjectUrl(): void {

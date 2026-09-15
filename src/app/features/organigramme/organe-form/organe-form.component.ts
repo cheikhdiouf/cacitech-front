@@ -1,11 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs';
 import { OrganigrammeService } from '../../../core/services/organigramme.service';
 import { ProfilService } from '../../../core/services/profil.service';
@@ -13,19 +11,29 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Organe } from '../../../core/models/organigramme.models';
 import { Profil } from '../../../core/models/profil.models';
 import { TextFieldComponent } from '../../../shared/components/text-field/text-field.component';
+import { FormActionsComponent } from '../../../shared/components/form-actions/form-actions.component';
+import { DialogLoadingComponent } from '../../../shared/components/dialog-loading/dialog-loading.component';
+import { DialogHeaderComponent } from '../../../shared/components/dialog-header/dialog-header.component';
+import { FormSectionComponent } from '../../../shared/components/form-section/form-section.component';
+
+export interface OrganeFormDialogData {
+  organe: Organe | null;
+}
 
 @Component({
   selector: 'app-organe-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    RouterLink,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatIconModule,
     MatFormFieldModule,
     MatSelectModule,
-    TextFieldComponent
+    MatCheckboxModule,
+    MatDialogModule,
+    TextFieldComponent,
+    FormActionsComponent,
+    DialogLoadingComponent,
+    DialogHeaderComponent,
+    FormSectionComponent
   ],
   templateUrl: './organe-form.component.html',
   styleUrl: './organe-form.component.css',
@@ -36,11 +44,12 @@ export class OrganeFormComponent implements OnInit {
   private readonly organigrammeService = inject(OrganigrammeService);
   private readonly profilService = inject(ProfilService);
   private readonly notification = inject(NotificationService);
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
+  private readonly dialogRef = inject(MatDialogRef<OrganeFormComponent, boolean>);
+  private readonly data = inject<OrganeFormDialogData>(MAT_DIALOG_DATA);
 
-  private readonly organeId = this.route.snapshot.paramMap.get('id');
+  private readonly organeId = this.data.organe?.id ?? null;
   readonly isEdit = this.organeId !== null;
+  readonly title = this.isEdit ? "Modifier l'entité" : 'Nouvelle entité';
 
   readonly loading = signal(true);
   readonly isSubmitting = signal(false);
@@ -48,11 +57,11 @@ export class OrganeFormComponent implements OnInit {
   readonly profils = signal<Profil[]>([]);
 
   readonly form = this.fb.nonNullable.group({
-    organe: ['', [Validators.required]],
-    abreviation: ['', [Validators.required]],
-    organe_superieure: [''],
-    responsable: [''],
-    actif: [true]
+    organe: [this.data.organe?.organe ?? '', [Validators.required]],
+    abreviation: [this.data.organe?.abreviation ?? '', [Validators.required]],
+    organe_superieure: [this.data.organe?.organe_superieure ?? ''],
+    responsable: [this.data.organe?.responsable ?? ''],
+    actif: [this.data.organe?.actif ?? true]
   });
 
   get organe() {
@@ -64,40 +73,21 @@ export class OrganeFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const reference$ = forkJoin([this.organigrammeService.listOrganes(), this.profilService.listProfils()]);
+    forkJoin([this.organigrammeService.listOrganes(), this.profilService.listProfils()]).subscribe({
+      next: ([organes, profils]) => {
+        this.organesDisponibles.set(organes.filter((o) => o.id !== this.organeId));
+        this.profils.set(profils);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.notification.error('Impossible de charger les données de référence.');
+        this.loading.set(false);
+      }
+    });
+  }
 
-    if (this.isEdit) {
-      forkJoin([reference$, this.organigrammeService.detailOrgane(this.organeId!)]).subscribe({
-        next: ([[organes, profils], organeDetail]) => {
-          this.organesDisponibles.set(organes.filter((o) => o.id !== this.organeId));
-          this.profils.set(profils);
-          this.form.patchValue({
-            organe: organeDetail.organe,
-            abreviation: organeDetail.abreviation,
-            organe_superieure: organeDetail.organe_superieure ?? '',
-            responsable: organeDetail.responsable ?? '',
-            actif: organeDetail.actif
-          });
-          this.loading.set(false);
-        },
-        error: () => {
-          this.notification.error("Impossible de charger l'entité.");
-          this.loading.set(false);
-        }
-      });
-    } else {
-      reference$.subscribe({
-        next: ([organes, profils]) => {
-          this.organesDisponibles.set(organes);
-          this.profils.set(profils);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.notification.error('Impossible de charger les données de référence.');
-          this.loading.set(false);
-        }
-      });
-    }
+  cancel(): void {
+    this.dialogRef.close(false);
   }
 
   submit(): void {
@@ -124,7 +114,7 @@ export class OrganeFormComponent implements OnInit {
       next: () => {
         this.isSubmitting.set(false);
         this.notification.success(this.isEdit ? 'Entité mise à jour.' : 'Entité créée.');
-        this.router.navigate(['/organigramme/organes']);
+        this.dialogRef.close(true);
       },
       error: () => {
         this.isSubmitting.set(false);

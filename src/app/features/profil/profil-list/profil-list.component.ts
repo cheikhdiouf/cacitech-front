@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -11,6 +11,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Profil } from '../../../core/models/profil.models';
 import { toggleActif } from '../../../core/utils/toggle-actif';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
+import { DialogService } from '../../../shared/services/dialog.service';
 
 interface ProfilRow {
   profil: Profil;
@@ -30,10 +31,11 @@ interface ProfilRow {
     SearchFieldComponent
   ],
   templateUrl: './profil-list.component.html',
-  styleUrl: './profil-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfilListComponent implements OnInit {
+  private readonly router = inject(Router);
+  private readonly dialogService = inject(DialogService);
   private readonly profilService = inject(ProfilService);
   private readonly organigrammeService = inject(OrganigrammeService);
   private readonly notification = inject(NotificationService);
@@ -41,7 +43,6 @@ export class ProfilListComponent implements OnInit {
   readonly profils = signal<Profil[]>([]);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
-
   readonly search = signal('');
 
   private readonly organeNames = signal<Record<string, string>>({});
@@ -92,14 +93,24 @@ export class ProfilListComponent implements OnInit {
     });
   }
 
+  openEdit(id: string): void {
+    this.router.navigate(['/profils', id]);
+  }
+
   onToggleActif(id: string): void {
+    const profil = this.profils().find((p) => p.id === id);
     toggleActif({
       items: this.profils,
       id,
       patch: (profilId, changes) => this.profilService.patchProfil(profilId, changes),
       notification: this.notification,
       labelActivated: 'Profil activé.',
-      labelDeactivated: 'Profil désactivé.'
+      labelDeactivated: 'Profil désactivé.',
+      dialogService: this.dialogService,
+      confirmDeactivate: {
+        title: 'Désactiver cet utilisateur ?',
+        message: `« ${profil?.prenom ?? ''} ${profil?.nom ?? ''} » ne pourra plus se connecter à l'application.`
+      }
     });
   }
 }

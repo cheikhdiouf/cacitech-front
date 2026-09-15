@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { MatIconModule } from '@angular/material/icon';
 
 interface NavChild {
@@ -27,20 +28,22 @@ interface NavItem {
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   @Input() collapsed = false;
   @Input() mobileOpen = false;
   @Output() toggleCollapse = new EventEmitter<void>();
   @Output() navigate = new EventEmitter<void>();
 
+  constructor(private readonly router: Router) {}
+
   readonly navItems: NavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/accueil' },
-    { label: 'Permissions', icon: 'lock_outline', route: '/permissions' },
     {
-      label: 'Profils',
-      icon: 'badge',
+      label: 'Paramétrage',
+      icon: 'settings',
       children: [
-        { label: 'Profils', icon: 'badge', route: '/profils' },
+        { label: 'Permissions', icon: 'lock_outline', route: '/permissions' },
+        { label: 'Profils', icon: 'badge', route: '/profils', groupLabel: 'Profils' },
         { label: 'Groupes', icon: 'group', route: '/profils/groupes' }
       ]
     },
@@ -56,13 +59,30 @@ export class SidebarComponent {
 
   private readonly expandedLabels = signal(new Set<string>());
 
+  ngOnInit(): void {
+    this.expandActiveParent(this.router.url);
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => this.expandActiveParent(event.urlAfterRedirects));
+  }
+
   isExpanded(item: NavItem): boolean {
     return this.expandedLabels().has(item.label);
+  }
+
+  hasActiveChild(item: NavItem): boolean {
+    return !!item.children?.some((child) => child.route && this.router.url.startsWith(child.route));
   }
 
   toggle(item: NavItem): void {
     if (!item.children || item.disabled) {
       return;
+    }
+
+    /** Sous-menu invisible en mode icônes seules : on déplie d'abord la sidebar
+     * pour que l'utilisateur puisse effectivement atteindre les enfants. */
+    if (this.collapsed) {
+      this.toggleCollapse.emit();
     }
 
     this.expandedLabels.update((current) => {
@@ -74,5 +94,14 @@ export class SidebarComponent {
       }
       return next;
     });
+  }
+
+  private expandActiveParent(url: string): void {
+    const activeParent = this.navItems.find((item) =>
+      item.children?.some((child) => child.route && url.startsWith(child.route))
+    );
+    if (activeParent) {
+      this.expandedLabels.update((current) => new Set(current).add(activeParent.label));
+    }
   }
 }

@@ -1,65 +1,61 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { OrganigrammeService } from '../../../core/services/organigramme.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { Fonction } from '../../../core/models/organigramme.models';
 import { TextFieldComponent } from '../../../shared/components/text-field/text-field.component';
+import { FormActionsComponent } from '../../../shared/components/form-actions/form-actions.component';
+import { DialogHeaderComponent } from '../../../shared/components/dialog-header/dialog-header.component';
+import { FormSectionComponent } from '../../../shared/components/form-section/form-section.component';
+
+export interface FonctionFormDialogData {
+  fonction: Fonction | null;
+}
 
 @Component({
   selector: 'app-fonction-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, MatButtonModule, MatProgressSpinnerModule, MatIconModule, TextFieldComponent],
+  imports: [
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCheckboxModule,
+    TextFieldComponent,
+    FormActionsComponent,
+    DialogHeaderComponent,
+    FormSectionComponent
+  ],
   templateUrl: './fonction-form.component.html',
   styleUrl: './fonction-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FonctionFormComponent implements OnInit {
+export class FonctionFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly organigrammeService = inject(OrganigrammeService);
   private readonly notification = inject(NotificationService);
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
+  private readonly dialogRef = inject(MatDialogRef<FonctionFormComponent, boolean>);
+  private readonly data = inject<FonctionFormDialogData>(MAT_DIALOG_DATA);
 
-  private readonly fonctionId = this.route.snapshot.paramMap.get('id');
+  private readonly fonctionId = this.data.fonction?.id ?? null;
   readonly isEdit = this.fonctionId !== null;
+  readonly title = this.isEdit ? 'Modifier la fonction' : 'Nouvelle fonction';
 
-  readonly loading = signal(this.isEdit);
   readonly isSubmitting = signal(false);
 
   readonly form = this.fb.nonNullable.group({
-    fonction: ['', [Validators.required]],
-    abreviation: [''],
-    description: [''],
-    actif: [true]
+    fonction: [this.data.fonction?.fonction ?? '', [Validators.required]],
+    abreviation: [this.data.fonction?.abreviation ?? ''],
+    description: [this.data.fonction?.description ?? ''],
+    actif: [this.data.fonction?.actif ?? true]
   });
 
   get fonction() {
     return this.form.controls.fonction;
   }
 
-  ngOnInit(): void {
-    if (!this.isEdit) {
-      return;
-    }
-
-    this.organigrammeService.detailFonction(this.fonctionId!).subscribe({
-      next: (fonction) => {
-        this.form.patchValue({
-          fonction: fonction.fonction,
-          abreviation: fonction.abreviation ?? '',
-          description: fonction.description ?? '',
-          actif: fonction.actif
-        });
-        this.loading.set(false);
-      },
-      error: () => {
-        this.notification.error('Impossible de charger la fonction.');
-        this.loading.set(false);
-      }
-    });
+  cancel(): void {
+    this.dialogRef.close(false);
   }
 
   submit(): void {
@@ -85,7 +81,7 @@ export class FonctionFormComponent implements OnInit {
       next: () => {
         this.isSubmitting.set(false);
         this.notification.success(this.isEdit ? 'Fonction mise à jour.' : 'Fonction créée.');
-        this.router.navigate(['/organigramme/fonctions']);
+        this.dialogRef.close(true);
       },
       error: () => {
         this.isSubmitting.set(false);

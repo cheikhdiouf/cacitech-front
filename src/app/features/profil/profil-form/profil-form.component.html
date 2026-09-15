@@ -1,98 +1,92 @@
-<div class="profil-form__header">
-  <a routerLink="/profils" class="profil-form__back" aria-label="Retour">
-    <mat-icon>arrow_back</mat-icon>
-  </a>
-  <h1>{{ isEdit ? 'Modifier le profil' : 'Nouveau profil' }}</h1>
-</div>
-
-@if (loading()) {
-  <div class="profil-form__state">
-    <mat-spinner diameter="32"></mat-spinner>
+<div class="form-page form-page--wide">
+  <div class="form-page__header">
+    <a routerLink="/profils" class="form-page__back" aria-label="Retour">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+    <h1>{{ isEdit ? 'Modifier le profil' : 'Nouveau profil' }}</h1>
   </div>
-} @else {
-  <form class="profil-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <div class="profil-form__photo">
-      <div class="profil-form__photo-preview">
-        @if (photoPreview()) {
-          <img [src]="photoPreview()" alt="Photo du profil" />
-        } @else {
-          <mat-icon>person</mat-icon>
-        }
-      </div>
-      <label class="profil-form__photo-upload">
-        <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
-        <mat-icon>photo_camera</mat-icon>
-        Changer la photo
-      </label>
+
+  @if (loading()) {
+    <div class="form-page__state">
+      <mat-spinner diameter="32"></mat-spinner>
     </div>
+  } @else {
+    <div class="form-page__card">
+      <form class="form-page__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="profil-form__photo">
+          <div class="profil-form__photo-preview">
+            @if (photoPreview()) {
+              <img [src]="photoPreview()" alt="Photo du profil" />
+            } @else {
+              <mat-icon>person</mat-icon>
+            }
+          </div>
+          <label class="profil-form__photo-upload">
+            <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
+            <mat-icon>photo_camera</mat-icon>
+            Changer la photo
+          </label>
+        </div>
 
-    <div class="profil-form__grid">
-      <app-text-field label="Matricule" formControlName="matricule" />
-      <app-text-field
-        label="Email"
-        type="email"
-        formControlName="email"
-        [required]="true"
-        [errorMessage]="email.invalid && email.touched ? 'Un email valide est requis.' : null"
-      />
-      <app-text-field
-        label="Nom"
-        formControlName="nom"
-        [required]="true"
-        [errorMessage]="nom.invalid && nom.touched ? 'Le nom est requis.' : null"
-      />
-      <app-text-field
-        label="Prénom"
-        formControlName="prenom"
-        [required]="true"
-        [errorMessage]="prenom.invalid && prenom.touched ? 'Le prénom est requis.' : null"
-      />
-      <app-text-field label="Téléphone" formControlName="telephone" />
-      <app-text-field label="Adresse" formControlName="adresse" />
-      <app-text-field label="Prime commerciale" type="number" formControlName="prime" />
+        <div class="profil-form__grid">
+          <app-text-field label="Matricule" formControlName="matricule" />
+          <app-text-field
+            label="Email"
+            type="email"
+            formControlName="email"
+            [required]="true"
+            [errorMessage]="email.invalid && email.touched ? 'Un email valide est requis.' : null"
+          />
+          <app-text-field
+            label="Nom"
+            formControlName="nom"
+            [required]="true"
+            [errorMessage]="nom.invalid && nom.touched ? 'Le nom est requis.' : null"
+          />
+          <app-text-field
+            label="Prénom"
+            formControlName="prenom"
+            [required]="true"
+            [errorMessage]="prenom.invalid && prenom.touched ? 'Le prénom est requis.' : null"
+          />
+          <app-text-field label="Téléphone" formControlName="telephone" />
+          <app-text-field label="Adresse" formControlName="adresse" />
+          <app-text-field label="Prime commerciale" type="number" formControlName="prime" />
 
-      <mat-form-field appearance="outline">
-        <mat-label>Entité</mat-label>
-        <mat-select formControlName="entite">
-          @for (organe of organes(); track organe.id) {
-            <mat-option [value]="organe.id">{{ organe.organe }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Entité</mat-label>
+            <mat-select formControlName="entite">
+              @for (organe of organes(); track organe.id) {
+                <mat-option [value]="organe.id">{{ organe.organe }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Fonction</mat-label>
-        <mat-select formControlName="fonction">
-          @for (fonction of fonctions(); track fonction.id) {
-            <mat-option [value]="fonction.id">{{ fonction.fonction }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Fonction</mat-label>
+            <mat-select formControlName="fonction">
+              @for (fonction of fonctions(); track fonction.id) {
+                <mat-option [value]="fonction.id">{{ fonction.fonction }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Groupes</mat-label>
-        <mat-select formControlName="groupes" multiple>
-          @for (groupe of groupesDisponibles(); track groupe.id) {
-            <mat-option [value]="groupe.id">{{ groupe.nom }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Groupes</mat-label>
+            <mat-select formControlName="groupes" multiple>
+              @for (groupe of groupesDisponibles(); track groupe.id) {
+                <mat-option [value]="groupe.id">{{ groupe.nom }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <mat-checkbox class="form-page__actif" formControlName="actif">Profil actif</mat-checkbox>
+
+        <div class="form-page__actions">
+          <app-form-actions [isEdit]="isEdit" [submitting]="isSubmitting()" (cancel)="cancel()" />
+        </div>
+      </form>
     </div>
-
-    <label class="profil-form__actif">
-      <input type="checkbox" formControlName="actif" />
-      Profil actif
-    </label>
-
-    <div class="profil-form__actions">
-      <button mat-button type="button" routerLink="/profils">Annuler</button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting()">
-        @if (isSubmitting()) {
-          <mat-spinner diameter="20" color="accent" />
-        } @else {
-          <span>{{ isEdit ? 'Enregistrer' : 'Créer' }}</span>
-        }
-      </button>
-    </div>
-  </form>
-}
+  }
+</div>

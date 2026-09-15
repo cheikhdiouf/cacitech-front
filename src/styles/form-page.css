@@ -1,0 +1,97 @@
+/**
+ * Styles partagés pour les pages de formulaire (fonction, entité, groupe, profil).
+ * Centre le contenu dans une carte pour éviter qu'il ne reste collé au bord gauche
+ * de l'écran, et harmonise en-tête / actions / états de chargement.
+ */
+
+.form-page {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.form-page--wide {
+  max-width: 840px;
+}
+
+.form-page__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-page__header h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.form-page__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.form-page__back:hover {
+  background-color: var(--color-surface-muted);
+  color: var(--color-brand-600);
+}
+
+.form-page__state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+
+.form-page__card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+  padding: 1.75rem;
+}
+
+.form-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.form-page__actif {
+  display: flex;
+  align-items: center;
+}
+
+.form-page__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.form-page__actions button[mat-flat-button] {
+  border-radius: 10px;
+  height: 40px;
+  padding: 0 1.25rem;
+  min-width: 110px;
+}
+
+.form-page__actions button[mat-button] {
+  border-radius: 10px;
+  height: 40px;
+}
+
+@media (max-width: 640px) {
+  .form-page__card {
+    padding: 1.25rem;
+  }
+}

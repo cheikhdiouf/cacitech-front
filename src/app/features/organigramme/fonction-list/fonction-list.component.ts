@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -9,25 +8,20 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Fonction } from '../../../core/models/organigramme.models';
 import { toggleActif } from '../../../core/utils/toggle-actif';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
+import { DialogService } from '../../../shared/services/dialog.service';
+import { FonctionFormComponent } from '../fonction-form/fonction-form.component';
 
 @Component({
   selector: 'app-fonction-list',
   standalone: true,
-  imports: [
-    RouterLink,
-    MatIconModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatSlideToggleModule,
-    SearchFieldComponent
-  ],
+  imports: [MatIconModule, MatButtonModule, MatProgressSpinnerModule, MatSlideToggleModule, SearchFieldComponent],
   templateUrl: './fonction-list.component.html',
-  styleUrl: './fonction-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FonctionListComponent implements OnInit {
   private readonly organigrammeService = inject(OrganigrammeService);
   private readonly notification = inject(NotificationService);
+  private readonly dialogService = inject(DialogService);
 
   readonly fonctions = signal<Fonction[]>([]);
   readonly loading = signal(true);
@@ -65,13 +59,38 @@ export class FonctionListComponent implements OnInit {
   }
 
   onToggleActif(id: string): void {
+    const fonction = this.fonctions().find((f) => f.id === id);
     toggleActif({
       items: this.fonctions,
       id,
       patch: (fonctionId, changes) => this.organigrammeService.patchFonction(fonctionId, changes),
       notification: this.notification,
       labelActivated: 'Fonction activée.',
-      labelDeactivated: 'Fonction désactivée.'
+      labelDeactivated: 'Fonction désactivée.',
+      dialogService: this.dialogService,
+      confirmDeactivate: {
+        title: 'Désactiver cette fonction ?',
+        message: `« ${fonction?.fonction ?? ''} » sera désactivée. Les profils qui l'occupent resteront liés mais elle n'apparaîtra plus comme active.`
+      }
     });
+  }
+
+  openCreate(): void {
+    this.openDialog(null);
+  }
+
+  openEdit(fonction: Fonction): void {
+    this.openDialog(fonction);
+  }
+
+  private openDialog(fonction: Fonction | null): void {
+    this.dialogService
+      .open(FonctionFormComponent, { size: 'large', data: { fonction } })
+      .afterClosed()
+      .subscribe((saved) => {
+        if (saved) {
+          this.load();
+        }
+      });
   }
 }

@@ -1,0 +1,14 @@
+<button mat-flat-button color="warn" type="button" class="form-actions__cancel" (click)="cancel.emit()">
+  <mat-icon>close</mat-icon>
+  <span>{{ cancelLabel }}</span>
+</button>
+<button mat-flat-button color="primary" type="submit" class="form-actions__submit" [disabled]="submitting">
+  @if (submitting) {
+    <mat-spinner diameter="20" color="accent" />
+  } @else {
+    <ng-container>
+      <mat-icon>check</mat-icon>
+      <span>{{ submitLabel }}</span>
+    </ng-container>
+  }
+</button>

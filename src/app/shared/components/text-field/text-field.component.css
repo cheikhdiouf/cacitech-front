@@ -1,3 +1,15 @@
 .text-field {
   width: 100%;
+  --mdc-outlined-text-field-container-shape: 10px;
+  --mdc-outlined-text-field-outline-color: var(--color-border);
+  --mdc-outlined-text-field-hover-outline-color: var(--color-brand-500);
+}
+
+.text-field .mat-mdc-text-field-wrapper {
+  background: var(--color-surface-muted);
+  border-radius: 10px;
+}
+
+.text-field .mat-mdc-form-field-icon-prefix mat-icon {
+  color: var(--color-text-muted);
 }
