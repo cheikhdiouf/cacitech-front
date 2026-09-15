@@ -44,8 +44,69 @@
   width: 20px;
 }
 
+.list-page__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.list-page__header-actions button[mat-stroked-button] {
+  border-radius: 10px;
+  height: 40px;
+  padding: 0 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 500;
+}
+
+.list-page__header-actions button[mat-stroked-button] mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
 .list-page__search {
   display: block;
+}
+
+/* Barre d'actions groupées : apparaît sous l'en-tête dès qu'une ligne est cochée. */
+.list-page__bulk-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--color-brand-tint);
+  border: 1px solid var(--color-brand-500);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.list-page__bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.list-page__bulk-actions button[mat-stroked-button] {
+  border-radius: 10px;
+  height: 36px;
+  padding: 0 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 500;
+}
+
+.list-page__table td:first-child,
+.list-page__table th:first-child {
+  width: 48px;
+  overflow: visible;
 }
 
 .list-page__result-count {
@@ -82,21 +143,31 @@
   overflow-x: auto;
 }
 
+/* mat-table (MDC) applique ses propres styles de base (padding, bordures, ripple sur les
+ * lignes...) qu'on neutralise ici pour garder l'apparence "carte" existante plutôt que le
+ * look Material par défaut. */
 .list-page__table {
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
+  background: transparent;
 }
 
 .list-page__table th,
 .list-page__table td {
   text-align: left;
   vertical-align: middle;
-  padding: 0.85rem 1.1rem;
+  padding: 0.85rem 1.1rem !important;
   font-size: 0.9rem;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  border-bottom: none;
+}
+
+.list-page__table .mdc-data-table__cell,
+.list-page__table .mdc-data-table__header-cell {
+  padding: 0;
 }
 
 .list-page__table thead th {

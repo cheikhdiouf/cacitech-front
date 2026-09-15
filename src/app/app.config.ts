@@ -1,12 +1,13 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
-import { loadingInterceptor } from './core/interceptors/loading.interceptor';
+import { provideFrenchPaginatorIntl } from './core/utils/french-paginator-intl';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,6 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(),
     provideAnimationsAsync(),
-    provideHttpClient(withFetch(), withInterceptors([loadingInterceptor, authInterceptor]))
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    { provide: MatPaginatorIntl, useFactory: provideFrenchPaginatorIntl }
   ]
 };

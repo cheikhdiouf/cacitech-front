@@ -224,7 +224,11 @@ input:focus-visible,
 
 .mat-mdc-dialog-container .mat-mdc-dialog-content {
   padding: 0 1.75rem !important;
-  flex: 1 1 auto !important;
+  /* flex-grow à 0 (pas 1) : le contenu ne prend que la place dont il a besoin plutôt que
+     d'être étiré pour remplir tout l'espace flex disponible — un flex-grow:1 peut, selon
+     les navigateurs, allouer 1-2px de plus que le rendu réel du contenu et déclencher un
+     scroll vertical fantôme sur la surface (visible même quand le contenu tient largement). */
+  flex: 0 1 auto !important;
   overflow: visible !important;
   max-height: none !important;
 }
@@ -235,8 +239,8 @@ input:focus-visible,
 }
 
 .mat-mdc-dialog-container .mat-mdc-dialog-actions {
-  padding: 2rem 1.75rem 1.5rem !important;
-  margin-top: 1rem !important;
+  padding: 1rem 1.75rem 1.5rem !important;
+  margin-top: 0.25rem !important;
   border-top: 1px solid var(--color-border);
   justify-content: space-between !important;
 }

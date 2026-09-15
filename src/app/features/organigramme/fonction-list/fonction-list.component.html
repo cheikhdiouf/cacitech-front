@@ -5,13 +5,48 @@
     class="list-page__search"
     placeholder="Rechercher une fonction..."
     [value]="search()"
-    (valueChange)="search.set($event)"
+    (valueChange)="onSearchChange($event)"
   />
-  <button mat-flat-button color="primary" (click)="openCreate()">
-    <mat-icon>add</mat-icon>
-    Nouvelle fonction
-  </button>
+  <div class="list-page__header-actions">
+    <button mat-stroked-button [matMenuTriggerFor]="exportMenu">
+      <mat-icon>file_download</mat-icon>
+      Exporter
+    </button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="exportExcel()">
+        <mat-icon>grid_on</mat-icon>
+        <span>Excel (.xlsx)</span>
+      </button>
+      <button mat-menu-item (click)="exportPdf()">
+        <mat-icon>picture_as_pdf</mat-icon>
+        <span>PDF</span>
+      </button>
+    </mat-menu>
+    <button mat-flat-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon>
+      Nouvelle fonction
+    </button>
+  </div>
 </div>
+
+@if (selection.hasValue()) {
+  <div class="list-page__bulk-bar">
+    <span>{{ selection.selected.length }} élément(s) sélectionné(s)</span>
+    <div class="list-page__bulk-actions">
+      <button mat-stroked-button (click)="bulkActivate()">
+        <mat-icon>toggle_on</mat-icon>
+        Activer
+      </button>
+      <button mat-stroked-button color="warn" (click)="bulkDeactivate()">
+        <mat-icon>toggle_off</mat-icon>
+        Désactiver
+      </button>
+      <button mat-icon-button (click)="selection.clear()" aria-label="Annuler la sélection">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+}
 
 @if (loading()) {
   <div class="list-page__state">
@@ -28,54 +63,86 @@
   </div>
 } @else {
   <div class="list-page__table-wrap">
-  <table class="list-page__table">
-    <thead>
-      <tr>
-        <th>Poste</th>
-        <th>Abréviation</th>
-        <th>Description</th>
-        <th>Statut</th>
-        <th></th>
+    <table mat-table [dataSource]="dataSource" matSort class="list-page__table">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.masterToggle() : null"
+            [checked]="selection.hasValue() && selection.isAllSelected()"
+            [indeterminate]="selection.hasValue() && !selection.isAllSelected()"
+            [aria-label]="selection.checkboxLabel()"
+          ></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let fonction" (click)="$event.stopPropagation()">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(fonction) : null"
+            [checked]="selection.isSelected(fonction)"
+            [aria-label]="selection.checkboxLabel(fonction)"
+          ></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fonction">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Poste</th>
+        <td mat-cell *matCellDef="let fonction" [title]="fonction.fonction">{{ fonction.fonction }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="abreviation">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Abréviation</th>
+        <td mat-cell *matCellDef="let fonction">{{ fonction.abreviation }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+        <td mat-cell *matCellDef="let fonction" [title]="fonction.description">{{ fonction.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actif">
+        <th mat-header-cell *matHeaderCellDef>Statut</th>
+        <td mat-cell *matCellDef="let fonction" (click)="$event.stopPropagation()">
+          <mat-slide-toggle
+            [checked]="fonction.actif"
+            (change)="onToggleActif(fonction.id)"
+            [aria-label]="fonction.actif ? 'Désactiver' : 'Activer'"
+          >
+            {{ fonction.actif ? 'Actif' : 'Inactif' }}
+          </mat-slide-toggle>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
+        <td mat-cell *matCellDef="let fonction">
+          <button mat-icon-button (click)="$event.stopPropagation(); openDetail(fonction)" aria-label="Voir le détail">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button (click)="$event.stopPropagation(); openEdit(fonction)" aria-label="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let fonction; columns: displayedColumns"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'Modifier ' + fonction.fonction"
+        (click)="openEdit(fonction)"
+        (keydown.enter)="openEdit(fonction)"
+      ></tr>
+
+      <tr *matNoDataRow>
+        <td [attr.colspan]="displayedColumns.length" class="list-page__empty">
+          {{ search() ? 'Aucune fonction ne correspond à votre recherche.' : 'Aucune fonction trouvée.' }}
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      @for (fonction of filteredFonctions(); track fonction.id) {
-        <tr
-          tabindex="0"
-          role="button"
-          [attr.aria-label]="'Modifier ' + fonction.fonction"
-          (click)="openEdit(fonction)"
-          (keydown.enter)="openEdit(fonction)"
-        >
-          <td [title]="fonction.fonction">{{ fonction.fonction }}</td>
-          <td>{{ fonction.abreviation }}</td>
-          <td [title]="fonction.description">{{ fonction.description }}</td>
-          <td (click)="$event.stopPropagation()">
-            <mat-slide-toggle
-              [checked]="fonction.actif"
-              (change)="onToggleActif(fonction.id)"
-              [aria-label]="fonction.actif ? 'Désactiver' : 'Activer'"
-            >
-              {{ fonction.actif ? 'Actif' : 'Inactif' }}
-            </mat-slide-toggle>
-          </td>
-          <td>
-            <button mat-icon-button (click)="$event.stopPropagation(); openDetail(fonction)" aria-label="Voir le détail">
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button mat-icon-button (click)="$event.stopPropagation(); openEdit(fonction)" aria-label="Modifier">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="5" class="list-page__empty">
-            {{ search() ? 'Aucune fonction ne correspond à votre recherche.' : 'Aucune fonction trouvée.' }}
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" [pageSize]="10" showFirstLastButtons aria-label="Pages de fonctions">
+    </mat-paginator>
   </div>
 }

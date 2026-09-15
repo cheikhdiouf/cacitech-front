@@ -5,8 +5,24 @@
     class="list-page__search"
     placeholder="Rechercher une permission..."
     [value]="search()"
-    (valueChange)="search.set($event)"
+    (valueChange)="onSearchChange($event)"
   />
+  <div class="list-page__header-actions">
+    <button mat-stroked-button [matMenuTriggerFor]="exportMenu">
+      <mat-icon>file_download</mat-icon>
+      Exporter
+    </button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="exportExcel()">
+        <mat-icon>grid_on</mat-icon>
+        <span>Excel (.xlsx)</span>
+      </button>
+      <button mat-menu-item (click)="exportPdf()">
+        <mat-icon>picture_as_pdf</mat-icon>
+        <span>PDF</span>
+      </button>
+    </mat-menu>
+  </div>
 </div>
 
 @if (loading()) {
@@ -24,27 +40,28 @@
   </div>
 } @else {
   <div class="list-page__table-wrap">
-    <table class="list-page__table">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Code</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (permission of filteredPermissions(); track permission.id) {
-          <tr>
-            <td>{{ permission.name }}</td>
-            <td>{{ permission.codename }}</td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="2" class="list-page__empty">
-              {{ search() ? 'Aucune permission ne correspond à votre recherche.' : 'Aucune permission trouvée.' }}
-            </td>
-          </tr>
-        }
-      </tbody>
+    <table mat-table [dataSource]="dataSource" matSort class="list-page__table">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let permission">{{ permission.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="codename">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
+        <td mat-cell *matCellDef="let permission">{{ permission.codename }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let permission; columns: displayedColumns"></tr>
+
+      <tr *matNoDataRow>
+        <td [attr.colspan]="displayedColumns.length" class="list-page__empty">
+          {{ search() ? 'Aucune permission ne correspond à votre recherche.' : 'Aucune permission trouvée.' }}
+        </td>
+      </tr>
     </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" [pageSize]="10" showFirstLastButtons aria-label="Pages de permissions">
+    </mat-paginator>
   </div>
 }

@@ -1,5 +1,6 @@
 import { WritableSignal } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { NotificationService } from '../services/notification.service';
 import { DialogService } from '../../shared/services/dialog.service';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -59,6 +60,76 @@ export function toggleActif<T extends { id: string; actif: boolean }>({
         data: {
           title: confirmDeactivate.title,
           message: confirmDeactivate.message,
+          confirmLabel: 'Désactiver',
+          icon: 'toggle_off',
+          destructive: true
+        }
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          apply();
+        }
+      });
+    return;
+  }
+
+  apply();
+}
+
+interface BulkSetActifOptions {
+  ids: string[];
+  actif: boolean;
+  patch: (id: string, changes: { actif: boolean }) => Observable<unknown>;
+  notification: NotificationService;
+  dialogService: DialogService;
+  confirmTitle: string;
+  confirmMessage: string;
+  onDone: () => void;
+}
+
+/** Applique "actif"/"inactif" à une sélection multiple (barre d'actions groupées d'un
+ * tableau) : une seule confirmation pour tout le lot avant d'envoyer les PATCH en parallèle,
+ * puis rechargement de la liste (plus simple qu'une mise à jour optimiste par ligne ici). */
+export function bulkSetActif({
+  ids,
+  actif,
+  patch,
+  notification,
+  dialogService,
+  confirmTitle,
+  confirmMessage,
+  onDone
+}: BulkSetActifOptions): void {
+  if (ids.length === 0) {
+    return;
+  }
+
+  const apply = (): void => {
+    forkJoin(
+      ids.map((id) =>
+        patch(id, { actif }).pipe(
+          catchError(() => of(null))
+        )
+      )
+    ).subscribe((results) => {
+      const failures = results.filter((result) => result === null).length;
+      if (failures > 0) {
+        notification.error(`${failures} élément(s) n'ont pas pu être mis à jour.`);
+      } else {
+        notification.success(actif ? 'Éléments activés.' : 'Éléments désactivés.');
+      }
+      onDone();
+    });
+  };
+
+  if (!actif) {
+    dialogService
+      .open(ConfirmDialogComponent, {
+        size: 'small',
+        data: {
+          title: confirmTitle,
+          message: confirmMessage,
           confirmLabel: 'Désactiver',
           icon: 'toggle_off',
           destructive: true

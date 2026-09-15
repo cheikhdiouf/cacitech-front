@@ -5,13 +5,48 @@
     class="list-page__search"
     placeholder="Rechercher une entité..."
     [value]="search()"
-    (valueChange)="search.set($event)"
+    (valueChange)="onSearchChange($event)"
   />
-  <button mat-flat-button color="primary" (click)="openCreate()">
-    <mat-icon>add</mat-icon>
-    Nouvelle entité
-  </button>
+  <div class="list-page__header-actions">
+    <button mat-stroked-button [matMenuTriggerFor]="exportMenu">
+      <mat-icon>file_download</mat-icon>
+      Exporter
+    </button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="exportExcel()">
+        <mat-icon>grid_on</mat-icon>
+        <span>Excel (.xlsx)</span>
+      </button>
+      <button mat-menu-item (click)="exportPdf()">
+        <mat-icon>picture_as_pdf</mat-icon>
+        <span>PDF</span>
+      </button>
+    </mat-menu>
+    <button mat-flat-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon>
+      Nouvelle entité
+    </button>
+  </div>
 </div>
+
+@if (selection.hasValue()) {
+  <div class="list-page__bulk-bar">
+    <span>{{ selection.selected.length }} élément(s) sélectionné(s)</span>
+    <div class="list-page__bulk-actions">
+      <button mat-stroked-button (click)="bulkActivate()">
+        <mat-icon>toggle_on</mat-icon>
+        Activer
+      </button>
+      <button mat-stroked-button color="warn" (click)="bulkDeactivate()">
+        <mat-icon>toggle_off</mat-icon>
+        Désactiver
+      </button>
+      <button mat-icon-button (click)="selection.clear()" aria-label="Annuler la sélection">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+}
 
 @if (loading()) {
   <div class="list-page__state">
@@ -28,56 +63,91 @@
   </div>
 } @else {
   <div class="list-page__table-wrap">
-  <table class="list-page__table">
-    <thead>
-      <tr>
-        <th>Entité</th>
-        <th>Abréviation</th>
-        <th>Tutelle</th>
-        <th>Niveau</th>
-        <th>Statut</th>
-        <th></th>
+    <table mat-table [dataSource]="dataSource" matSort class="list-page__table">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.masterToggle() : null"
+            [checked]="selection.hasValue() && selection.isAllSelected()"
+            [indeterminate]="selection.hasValue() && !selection.isAllSelected()"
+            [aria-label]="selection.checkboxLabel()"
+          ></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row" (click)="$event.stopPropagation()">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="selection.checkboxLabel(row)"
+          ></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="organe">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Entité</th>
+        <td mat-cell *matCellDef="let row" [title]="row.organe.organe">{{ row.organe.organe }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="abreviation">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Abréviation</th>
+        <td mat-cell *matCellDef="let row">{{ row.organe.abreviation }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="tutelle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tutelle</th>
+        <td mat-cell *matCellDef="let row" [title]="row.tutelleLabel">{{ row.tutelleLabel }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="niveau">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Niveau</th>
+        <td mat-cell *matCellDef="let row">{{ row.organe.niveau }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actif">
+        <th mat-header-cell *matHeaderCellDef>Statut</th>
+        <td mat-cell *matCellDef="let row" (click)="$event.stopPropagation()">
+          <mat-slide-toggle
+            [checked]="row.organe.actif"
+            (change)="onToggleActif(row.organe.id)"
+            [aria-label]="row.organe.actif ? 'Désactiver' : 'Activer'"
+          >
+            {{ row.organe.actif ? 'Actif' : 'Inactif' }}
+          </mat-slide-toggle>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button (click)="$event.stopPropagation(); openDetail(row.organe)" aria-label="Voir le détail">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button (click)="$event.stopPropagation(); openEdit(row.organe)" aria-label="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'Modifier ' + row.organe.organe"
+        (click)="openEdit(row.organe)"
+        (keydown.enter)="openEdit(row.organe)"
+      ></tr>
+
+      <tr class="list-page__empty-row" *matNoDataRow>
+        <td [attr.colspan]="displayedColumns.length" class="list-page__empty">
+          {{ search() ? 'Aucune entité ne correspond à votre recherche.' : 'Aucune entité trouvée.' }}
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      @for (row of filteredRows(); track row.organe.id) {
-        <tr
-          tabindex="0"
-          role="button"
-          [attr.aria-label]="'Modifier ' + row.organe.organe"
-          (click)="openEdit(row.organe)"
-          (keydown.enter)="openEdit(row.organe)"
-        >
-          <td [title]="row.organe.organe">{{ row.organe.organe }}</td>
-          <td>{{ row.organe.abreviation }}</td>
-          <td [title]="row.tutelleLabel">{{ row.tutelleLabel }}</td>
-          <td>{{ row.organe.niveau }}</td>
-          <td (click)="$event.stopPropagation()">
-            <mat-slide-toggle
-              [checked]="row.organe.actif"
-              (change)="onToggleActif(row.organe.id)"
-              [aria-label]="row.organe.actif ? 'Désactiver' : 'Activer'"
-            >
-              {{ row.organe.actif ? 'Actif' : 'Inactif' }}
-            </mat-slide-toggle>
-          </td>
-          <td>
-            <button mat-icon-button (click)="$event.stopPropagation(); openDetail(row.organe)" aria-label="Voir le détail">
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button mat-icon-button (click)="$event.stopPropagation(); openEdit(row.organe)" aria-label="Modifier">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="6" class="list-page__empty">
-            {{ search() ? 'Aucune entité ne correspond à votre recherche.' : 'Aucune entité trouvée.' }}
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" [pageSize]="10" showFirstLastButtons aria-label="Pages d'entités">
+    </mat-paginator>
   </div>
 }
