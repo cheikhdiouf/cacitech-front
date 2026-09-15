@@ -53,14 +53,22 @@ export class FonctionFormComponent implements OnInit {
   readonly detailView = signal<Fonction | null>(this.data.fonction);
 
   readonly form = this.fb.nonNullable.group({
-    fonction: [this.data.fonction?.fonction ?? '', [Validators.required]],
-    abreviation: [this.data.fonction?.abreviation ?? ''],
-    description: [this.data.fonction?.description ?? ''],
+    fonction: [this.data.fonction?.fonction ?? '', [Validators.required, Validators.maxLength(255)]],
+    abreviation: [this.data.fonction?.abreviation ?? '', [Validators.maxLength(15)]],
+    description: [this.data.fonction?.description ?? '', [Validators.maxLength(400)]],
     actif: [this.data.fonction?.actif ?? true]
   });
 
   get fonction() {
     return this.form.controls.fonction;
+  }
+
+  get abreviation() {
+    return this.form.controls.abreviation;
+  }
+
+  get description() {
+    return this.form.controls.description;
   }
 
   ngOnInit(): void {

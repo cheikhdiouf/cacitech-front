@@ -85,14 +85,14 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
   private objectUrl: string | null = null;
 
   readonly form = this.fb.nonNullable.group({
-    matricule: [''],
-    email: ['', [Validators.required, Validators.email]],
-    nom: ['', [Validators.required]],
-    prenom: ['', [Validators.required]],
+    matricule: ['', [Validators.maxLength(100)]],
+    email: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
+    nom: ['', [Validators.required, Validators.maxLength(30)]],
+    prenom: ['', [Validators.required, Validators.maxLength(100)]],
     entite: ['', [Validators.required]],
     fonction: ['', [Validators.required]],
-    telephone: [''],
-    adresse: [''],
+    telephone: ['', [Validators.maxLength(50)]],
+    adresse: ['', [Validators.maxLength(200)]],
     prime: [0],
     actif: [true],
     groupes: this.fb.nonNullable.control<string[]>([])
@@ -108,6 +108,18 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
 
   get prenom() {
     return this.form.controls.prenom;
+  }
+
+  get matricule() {
+    return this.form.controls.matricule;
+  }
+
+  get telephone() {
+    return this.form.controls.telephone;
+  }
+
+  get adresse() {
+    return this.form.controls.adresse;
   }
 
   ngOnInit(): void {

@@ -70,7 +70,7 @@ export class GroupeFormComponent implements OnInit {
   );
 
   readonly form = this.fb.nonNullable.group({
-    nom: [this.data.groupe?.nom ?? '', [Validators.required]],
+    nom: [this.data.groupe?.nom ?? '', [Validators.required, Validators.maxLength(150)]],
     description: [this.data.groupe?.description ?? ''],
     actif: [this.data.groupe?.actif ?? true],
     permissions: this.fb.nonNullable.control<number[]>(this.data.groupe?.permissions ?? [])

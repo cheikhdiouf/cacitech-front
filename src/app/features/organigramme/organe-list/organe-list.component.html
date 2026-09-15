@@ -48,9 +48,9 @@
           (click)="openEdit(row.organe)"
           (keydown.enter)="openEdit(row.organe)"
         >
-          <td>{{ row.organe.organe }}</td>
+          <td [title]="row.organe.organe">{{ row.organe.organe }}</td>
           <td>{{ row.organe.abreviation }}</td>
-          <td>{{ row.tutelleLabel }}</td>
+          <td [title]="row.tutelleLabel">{{ row.tutelleLabel }}</td>
           <td>{{ row.organe.niveau }}</td>
           <td (click)="$event.stopPropagation()">
             <mat-slide-toggle

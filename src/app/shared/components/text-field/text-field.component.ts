@@ -25,6 +25,7 @@ export class TextFieldComponent implements ControlValueAccessor {
   @Input() type = 'text';
   @Input() autocomplete = 'off';
   @Input() required = false;
+  @Input() maxLength: number | null = null;
   @Input() errorMessage: string | null = null;
   @Input() hint: string | null = null;
 

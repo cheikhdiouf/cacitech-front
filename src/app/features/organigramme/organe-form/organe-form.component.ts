@@ -85,8 +85,8 @@ export class OrganeFormComponent implements OnInit {
   });
 
   readonly form = this.fb.nonNullable.group({
-    organe: [this.data.organe?.organe ?? '', [Validators.required]],
-    abreviation: [this.data.organe?.abreviation ?? '', [Validators.required]],
+    organe: [this.data.organe?.organe ?? '', [Validators.required, Validators.maxLength(400)]],
+    abreviation: [this.data.organe?.abreviation ?? '', [Validators.required, Validators.maxLength(15)]],
     organe_superieure: [this.data.organe?.organe_superieure ?? ''],
     responsable: [this.data.organe?.responsable ?? ''],
     actif: [this.data.organe?.actif ?? true]

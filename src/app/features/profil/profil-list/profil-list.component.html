@@ -51,9 +51,9 @@
         >
           <td>{{ row.profil.nom }}</td>
           <td>{{ row.profil.prenom }}</td>
-          <td>{{ row.profil.email }}</td>
-          <td>{{ row.entiteLabel }}</td>
-          <td>{{ row.fonctionLabel }}</td>
+          <td [title]="row.profil.email">{{ row.profil.email }}</td>
+          <td [title]="row.entiteLabel">{{ row.entiteLabel }}</td>
+          <td [title]="row.fonctionLabel">{{ row.fonctionLabel }}</td>
           <td (click)="$event.stopPropagation()">
             <mat-slide-toggle
               [checked]="row.profil.actif"

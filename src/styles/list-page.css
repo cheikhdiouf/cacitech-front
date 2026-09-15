@@ -84,14 +84,19 @@
 
 .list-page__table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
 }
 
 .list-page__table th,
 .list-page__table td {
   text-align: left;
+  vertical-align: middle;
   padding: 0.85rem 1.1rem;
   font-size: 0.9rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .list-page__table thead th {
@@ -138,7 +143,10 @@
   color: var(--color-text-primary);
 }
 
-/* Colonne action (bouton "Modifier") : figée à droite, visible en permanence. */
+/* Colonne action (bouton "Modifier") : figée à droite, visible en permanence — l'en-tête
+ * (vide) doit partager le même alignement, sinon sa largeur calculée diverge de celle de
+ * la colonne au-dessous en table-layout: fixed. */
+.list-page__table th:last-child,
 .list-page__table td:last-child {
   text-align: right;
   white-space: nowrap;

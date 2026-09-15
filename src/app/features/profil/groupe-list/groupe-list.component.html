@@ -47,8 +47,8 @@
           (click)="openEdit(groupe)"
           (keydown.enter)="openEdit(groupe)"
         >
-          <td>{{ groupe.nom }}</td>
-          <td>{{ groupe.description }}</td>
+          <td [title]="groupe.nom">{{ groupe.nom }}</td>
+          <td [title]="groupe.description">{{ groupe.description }}</td>
           <td>{{ groupe.permissions.length }}</td>
           <td (click)="$event.stopPropagation()">
             <mat-slide-toggle

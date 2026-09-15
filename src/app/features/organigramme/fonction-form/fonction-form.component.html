@@ -33,14 +33,29 @@
         icon="work_outline"
         formControlName="fonction"
         [required]="true"
-        [errorMessage]="fonction.invalid && fonction.touched ? 'Le poste est requis.' : null"
+        [maxLength]="255"
+        [errorMessage]="
+          fonction.hasError('required') && fonction.touched
+            ? 'Le poste est requis.'
+            : fonction.hasError('maxlength')
+              ? 'Le poste ne doit pas dépasser 255 caractères.'
+              : null
+        "
       />
-      <app-text-field label="Abréviation" icon="short_text" formControlName="abreviation" />
+      <app-text-field
+        label="Abréviation"
+        icon="short_text"
+        formControlName="abreviation"
+        [maxLength]="15"
+        [errorMessage]="abreviation.hasError('maxlength') ? 'L’abréviation ne doit pas dépasser 15 caractères.' : null"
+      />
       <app-text-field
         label="Description"
         icon="notes"
         formControlName="description"
         class="fonction-form__full"
+        [maxLength]="400"
+        [errorMessage]="description.hasError('maxlength') ? 'La description ne doit pas dépasser 400 caractères.' : null"
       />
 
       <mat-checkbox formControlName="actif">Fonction active</mat-checkbox>

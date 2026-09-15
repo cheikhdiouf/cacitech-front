@@ -34,14 +34,28 @@
         icon="apartment"
         formControlName="organe"
         [required]="true"
-        [errorMessage]="organe.invalid && organe.touched ? 'Le nom de l’entité est requis.' : null"
+        [maxLength]="400"
+        [errorMessage]="
+          organe.hasError('required') && organe.touched
+            ? 'Le nom de l’entité est requis.'
+            : organe.hasError('maxlength')
+              ? 'Le nom de l’entité ne doit pas dépasser 400 caractères.'
+              : null
+        "
       />
       <app-text-field
         label="Abréviation"
         icon="short_text"
         formControlName="abreviation"
         [required]="true"
-        [errorMessage]="abreviation.invalid && abreviation.touched ? 'L’abréviation est requise.' : null"
+        [maxLength]="15"
+        [errorMessage]="
+          abreviation.hasError('required') && abreviation.touched
+            ? 'L’abréviation est requise.'
+            : abreviation.hasError('maxlength')
+              ? 'L’abréviation ne doit pas dépasser 15 caractères.'
+              : null
+        "
       />
 
       <app-form-section label="Rattachement" icon="account_tree" />

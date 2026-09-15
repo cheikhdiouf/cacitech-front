@@ -47,9 +47,9 @@
           (click)="openEdit(fonction)"
           (keydown.enter)="openEdit(fonction)"
         >
-          <td>{{ fonction.fonction }}</td>
+          <td [title]="fonction.fonction">{{ fonction.fonction }}</td>
           <td>{{ fonction.abreviation }}</td>
-          <td>{{ fonction.description }}</td>
+          <td [title]="fonction.description">{{ fonction.description }}</td>
           <td (click)="$event.stopPropagation()">
             <mat-slide-toggle
               [checked]="fonction.actif"

@@ -74,31 +74,72 @@
         <app-form-section label="Informations personnelles" icon="badge" />
 
         <div class="profil-form__grid">
-          <app-text-field label="Matricule" icon="tag" formControlName="matricule" />
+          <app-text-field
+            label="Matricule"
+            icon="tag"
+            formControlName="matricule"
+            [maxLength]="100"
+            [errorMessage]="matricule.hasError('maxlength') ? 'Le matricule ne doit pas dépasser 100 caractères.' : null"
+          />
           <app-text-field
             label="Email"
             icon="mail_outline"
             type="email"
             formControlName="email"
             [required]="true"
-            [errorMessage]="email.invalid && email.touched ? 'Un email valide est requis.' : null"
+            [maxLength]="100"
+            [errorMessage]="
+              email.hasError('required') && email.touched
+                ? 'Un email valide est requis.'
+                : email.hasError('email') && email.touched
+                  ? 'Un email valide est requis.'
+                  : email.hasError('maxlength')
+                    ? 'L’email ne doit pas dépasser 100 caractères.'
+                    : null
+            "
           />
           <app-text-field
             label="Nom"
             icon="person_outline"
             formControlName="nom"
             [required]="true"
-            [errorMessage]="nom.invalid && nom.touched ? 'Le nom est requis.' : null"
+            [maxLength]="30"
+            [errorMessage]="
+              nom.hasError('required') && nom.touched
+                ? 'Le nom est requis.'
+                : nom.hasError('maxlength')
+                  ? 'Le nom ne doit pas dépasser 30 caractères.'
+                  : null
+            "
           />
           <app-text-field
             label="Prénom"
             icon="person_outline"
             formControlName="prenom"
             [required]="true"
-            [errorMessage]="prenom.invalid && prenom.touched ? 'Le prénom est requis.' : null"
+            [maxLength]="100"
+            [errorMessage]="
+              prenom.hasError('required') && prenom.touched
+                ? 'Le prénom est requis.'
+                : prenom.hasError('maxlength')
+                  ? 'Le prénom ne doit pas dépasser 100 caractères.'
+                  : null
+            "
           />
-          <app-text-field label="Téléphone" icon="call" formControlName="telephone" />
-          <app-text-field label="Adresse" icon="place" formControlName="adresse" />
+          <app-text-field
+            label="Téléphone"
+            icon="call"
+            formControlName="telephone"
+            [maxLength]="50"
+            [errorMessage]="telephone.hasError('maxlength') ? 'Le téléphone ne doit pas dépasser 50 caractères.' : null"
+          />
+          <app-text-field
+            label="Adresse"
+            icon="place"
+            formControlName="adresse"
+            [maxLength]="200"
+            [errorMessage]="adresse.hasError('maxlength') ? 'L’adresse ne doit pas dépasser 200 caractères.' : null"
+          />
         </div>
 
         <app-form-section label="Affectation" icon="account_tree" />

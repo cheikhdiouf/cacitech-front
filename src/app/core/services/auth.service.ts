@@ -38,7 +38,9 @@ export class AuthService {
     );
   }
 
-  /** Appelée par l'interceptor sur 401 — ne doit jamais elle-même déclencher un refresh. */
+  /** Appelée par l'interceptor sur 401, et par authGuard au premier chargement d'une route
+   * protégée (access token perdu au rechargement, refresh token encore valide) — ne doit
+   * jamais elle-même déclencher un refresh en boucle. */
   refreshToken(): Observable<string> {
     const refresh = this.refreshTokenValue;
 
