@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TableSkeletonComponent } from '../../../shared/components/table-skeleton/table-skeleton.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -37,6 +38,7 @@ import { FonctionFormComponent } from '../fonction-form/fonction-form.component'
     MatButtonModule,
     MatCheckboxModule,
     MatMenuModule,
+    MatTooltipModule,
     TableSkeletonComponent,
     MatSlideToggleModule,
     MatTableModule,

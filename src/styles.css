@@ -233,6 +233,25 @@ input:focus-visible,
   overflow-x: hidden !important;
 }
 
+/* Empêche le conteneur d'overlay CDK (partagé par toutes les popups/menus) de devenir lui-même
+ * scrollable si une popup dépasse de quelques pixels la hauteur de la fenêtre — c'est ce qui
+ * produisait une DEUXIÈME barre de défilement collée au bord de la page, en plus de celle,
+ * voulue, de la surface du dialogue elle-même. Chaque overlay se positionne par transform/
+ * position, pas par le flux du conteneur, donc ce overflow:hidden n'affecte aucun positionnement. */
+.cdk-overlay-container,
+.cdk-global-overlay-wrapper {
+  overflow: hidden !important;
+}
+
+/* Ceinture et bretelles : le scroll-block de MatDialog fixe normalement <html> en position
+ * fixed pendant qu'une popup est ouverte, mais si ce mécanisme ne s'applique pas correctement
+ * (conflit avec height:100% sur html/body ailleurs dans la feuille de style), la page derrière
+ * la popup peut défiler et afficher une scrollbar collée au bord du viewport. On bloque
+ * explicitement le scroll de la page tant que la classe posée par CDK est présente. */
+html.cdk-global-scrollblock {
+  overflow: hidden !important;
+}
+
 .cdk-overlay-pane {
   max-width: 95vw !important;
 }

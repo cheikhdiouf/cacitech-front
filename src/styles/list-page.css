@@ -153,12 +153,17 @@
   background: transparent;
 }
 
+.list-page__table {
+  --mat-table-header-container-height: 42px;
+  --mat-table-row-item-container-height: 40px;
+}
+
 .list-page__table th,
 .list-page__table td {
   text-align: left;
   vertical-align: middle;
-  padding: 0.85rem 1.1rem !important;
-  font-size: 0.9rem;
+  padding: 0.5rem 1.1rem !important;
+  font-size: 0.87rem;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -248,6 +253,8 @@
   --mdc-switch-selected-hover-handle-color: var(--color-success-solid);
   --mdc-switch-selected-focus-handle-color: var(--color-success-solid);
   --mdc-switch-selected-pressed-handle-color: var(--color-success-solid);
+  transform: scale(0.8);
+  transform-origin: left center;
 }
 
 .list-page__table mat-slide-toggle .mdc-label {
@@ -264,15 +271,68 @@
   white-space: nowrap;
 }
 
+/* Liste sans colonne "actions" (ex: Permissions, en lecture seule) : la dernière colonne
+ * contient une vraie donnée, pas des boutons — l'alignement à droite ci-dessus la ferait
+ * ressembler à une colonne d'actions vide à tort. */
+.list-page__table--plain th:last-child,
+.list-page__table--plain td:last-child {
+  text-align: left;
+  white-space: nowrap;
+}
+
 .list-page__table button[mat-icon-button] {
+  --mdc-icon-button-state-layer-size: 34px;
+  width: 34px;
+  height: 34px;
+  padding: 5px;
   color: var(--color-text-muted);
   border-radius: 8px;
   transition: color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
 }
 
+.list-page__table mat-checkbox {
+  --mdc-checkbox-state-layer-size: 34px;
+}
+
 .list-page__table button[mat-icon-button]:hover {
   color: var(--color-brand-600);
   background-color: var(--color-brand-tint);
+  transform: scale(1.06);
+}
+
+/* Actions "Voir le détail" / "Modifier" : chips tonaux toujours visibles (pas seulement au
+ * survol comme avant) pour rester immédiatement identifiables — une couleur par action plutôt
+ * que deux icônes grises indifférenciées. Ciblées par aria-label (identique sur toutes les
+ * listes) plutôt que dupliquer une classe dans chaque template. */
+.list-page__table button[mat-icon-button][aria-label='Voir le détail'],
+.list-page__table button[mat-icon-button][aria-label='Modifier'] {
+  border-radius: 9px;
+  margin-left: 0.3rem;
+}
+
+.list-page__table button[mat-icon-button][aria-label='Voir le détail'] {
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+}
+
+.list-page__table button[mat-icon-button][aria-label='Voir le détail']:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-muted);
+  border-color: var(--color-text-muted);
+  transform: scale(1.06);
+}
+
+.list-page__table button[mat-icon-button][aria-label='Modifier'] {
+  color: var(--color-brand-600);
+  background-color: var(--color-brand-tint);
+  border: 1px solid color-mix(in srgb, var(--color-brand-500) 25%, transparent);
+}
+
+.list-page__table button[mat-icon-button][aria-label='Modifier']:hover {
+  color: var(--color-white);
+  background-color: var(--color-brand-500);
+  border-color: var(--color-brand-500);
   transform: scale(1.06);
 }
 

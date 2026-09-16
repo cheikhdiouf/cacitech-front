@@ -1,11 +1,6 @@
-<div class="form-page form-page--wide">
-  <div class="form-page__header">
-    <a routerLink="/profils" class="form-page__back" aria-label="Retour">
-      <mat-icon>arrow_back</mat-icon>
-    </a>
-    <h1>{{ readOnly ? 'Détails du profil' : isEdit ? 'Modifier le profil' : 'Nouveau profil' }}</h1>
-  </div>
+<app-breadcrumb />
 
+<div class="form-page form-page--wide">
   @if (loading()) {
     <div class="form-page__state">
       <mat-spinner diameter="32"></mat-spinner>
@@ -22,34 +17,37 @@
         </div>
       </div>
 
-      <app-form-section label="Informations personnelles" icon="badge" />
+      <div class="profil-form__two-col">
+        <div>
+          <app-form-section label="Informations personnelles" icon="badge" />
 
-      <div class="profil-form__grid">
-        <app-detail-field label="Matricule" icon="tag" [value]="detailView()?.matricule" />
-        <app-detail-field label="Email" icon="mail_outline" [value]="detailView()?.email" />
-        <app-detail-field label="Nom" icon="person_outline" [value]="detailView()?.nom" />
-        <app-detail-field label="Prénom" icon="person_outline" [value]="detailView()?.prenom" />
-        <app-detail-field label="Téléphone" icon="call" [value]="detailView()?.telephone" />
-        <app-detail-field label="Adresse" icon="place" [value]="detailView()?.adresse" />
+          <div class="profil-form__grid profil-form__grid--2col">
+            <app-detail-field label="Matricule" icon="tag" [value]="detailView()?.matricule" />
+            <app-detail-field label="Email" icon="mail_outline" [value]="detailView()?.email" />
+            <app-detail-field label="Nom" icon="person_outline" [value]="detailView()?.nom" />
+            <app-detail-field label="Prénom" icon="person_outline" [value]="detailView()?.prenom" />
+            <app-detail-field label="Téléphone" icon="call" [value]="detailView()?.telephone" />
+            <app-detail-field label="Adresse" icon="place" [value]="detailView()?.adresse" />
+          </div>
+        </div>
+
+        <div>
+          <app-form-section label="Affectation" icon="account_tree" />
+
+          <div class="profil-form__grid">
+            <app-detail-field label="Entité" icon="apartment" [value]="entiteLabel()" />
+            <app-detail-field label="Fonction" icon="work_outline" [value]="fonctionLabel()" />
+            <app-detail-field label="Groupes" icon="group" [value]="groupesLabel()" class="profil-form__full" />
+            <app-detail-field label="Prime commerciale" icon="payments" [value]="primeLabel()" />
+            <app-detail-field
+              label="Statut"
+              icon="toggle_on"
+              [value]="detailView()?.actif ? 'Actif' : 'Inactif'"
+              [tone]="detailView()?.actif ? 'success' : 'error'"
+            />
+          </div>
+        </div>
       </div>
-
-      <app-form-section label="Affectation" icon="account_tree" />
-
-      <div class="profil-form__grid">
-        <app-detail-field label="Entité" icon="apartment" [value]="entiteLabel()" />
-        <app-detail-field label="Fonction" icon="work_outline" [value]="fonctionLabel()" />
-        <app-detail-field label="Groupes" icon="group" [value]="groupesLabel()" class="profil-form__full" />
-        <app-detail-field label="Prime commerciale" icon="payments" [value]="primeLabel()" />
-      </div>
-
-      <app-form-section label="Statut" icon="toggle_on" />
-
-      <app-detail-field
-        label="Statut"
-        icon="toggle_on"
-        [value]="detailView()?.actif ? 'Actif' : 'Inactif'"
-        [tone]="detailView()?.actif ? 'success' : 'error'"
-      />
 
       <div class="form-page__actions detail-actions">
         <button mat-stroked-button type="button" class="detail-actions__close" (click)="cancel()">
@@ -62,137 +60,152 @@
     <div class="form-page__card">
       <form class="form-page__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
         <div class="profil-form__photo">
-          <div class="profil-form__photo-preview">
+          <label class="profil-form__photo-preview" aria-label="Changer la photo">
             @if (photoPreview()) {
               <img [src]="photoPreview()" alt="Photo du profil" />
             } @else {
               <mat-icon>person</mat-icon>
             }
-          </div>
-          <label class="profil-form__photo-upload">
+            <span class="profil-form__photo-overlay">
+              <mat-icon>photo_camera</mat-icon>
+            </span>
             <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
-            <mat-icon>photo_camera</mat-icon>
-            Changer la photo
           </label>
-        </div>
-
-        <app-form-section label="Informations personnelles" icon="badge" />
-
-        <div class="profil-form__grid">
-          <app-text-field
-            label="Matricule"
-            icon="tag"
-            formControlName="matricule"
-            [maxLength]="100"
-            [errorMessage]="matricule.hasError('maxlength') ? 'Le matricule ne doit pas dépasser 100 caractères.' : null"
-          />
-          <app-text-field
-            label="Email"
-            icon="mail_outline"
-            type="email"
-            formControlName="email"
-            [required]="true"
-            [maxLength]="100"
-            [errorMessage]="
-              email.hasError('required') && email.touched
-                ? 'Un email valide est requis.'
-                : email.hasError('email') && email.touched
-                  ? 'Un email valide est requis.'
-                  : email.hasError('maxlength')
-                    ? 'L’email ne doit pas dépasser 100 caractères.'
-                    : null
-            "
-          />
-          <app-text-field
-            label="Nom"
-            icon="person_outline"
-            formControlName="nom"
-            [required]="true"
-            [maxLength]="30"
-            [errorMessage]="
-              nom.hasError('required') && nom.touched
-                ? 'Le nom est requis.'
-                : nom.hasError('maxlength')
-                  ? 'Le nom ne doit pas dépasser 30 caractères.'
-                  : null
-            "
-          />
-          <app-text-field
-            label="Prénom"
-            icon="person_outline"
-            formControlName="prenom"
-            [required]="true"
-            [maxLength]="100"
-            [errorMessage]="
-              prenom.hasError('required') && prenom.touched
-                ? 'Le prénom est requis.'
-                : prenom.hasError('maxlength')
-                  ? 'Le prénom ne doit pas dépasser 100 caractères.'
-                  : null
-            "
-          />
-          <app-text-field
-            label="Téléphone"
-            icon="call"
-            formControlName="telephone"
-            [maxLength]="50"
-            [errorMessage]="telephone.hasError('maxlength') ? 'Le téléphone ne doit pas dépasser 50 caractères.' : null"
-          />
-          <app-text-field
-            label="Adresse"
-            icon="place"
-            formControlName="adresse"
-            [maxLength]="200"
-            [errorMessage]="adresse.hasError('maxlength') ? 'L’adresse ne doit pas dépasser 200 caractères.' : null"
-          />
-        </div>
-
-        <app-form-section label="Affectation" icon="account_tree" />
-
-        <div class="profil-form__grid">
-          <mat-form-field appearance="outline">
-            <mat-label>Entité</mat-label>
-            <mat-icon matPrefix>apartment</mat-icon>
-            <mat-select formControlName="entite" required>
-              @for (organe of organes(); track organe.id) {
-                <mat-option [value]="organe.id">{{ organe.organe }}</mat-option>
-              }
-            </mat-select>
-            @if (entite.hasError('required') && entite.touched) {
-              <mat-error>L'entité est requise.</mat-error>
+          <div class="profil-form__photo-meta">
+            <span class="profil-form__photo-title">Photo de profil</span>
+            @if (photoPreview()) {
+              <button type="button" class="profil-form__photo-remove" (click)="removePhoto($event)">
+                <mat-icon>delete_outline</mat-icon>
+                Supprimer la photo
+              </button>
             }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Fonction</mat-label>
-            <mat-icon matPrefix>work_outline</mat-icon>
-            <mat-select formControlName="fonction" required>
-              @for (fonction of fonctions(); track fonction.id) {
-                <mat-option [value]="fonction.id">{{ fonction.fonction }}</mat-option>
-              }
-            </mat-select>
-            @if (fonction.hasError('required') && fonction.touched) {
-              <mat-error>La fonction est requise.</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="profil-form__full">
-            <mat-label>Groupes</mat-label>
-            <mat-icon matPrefix>group</mat-icon>
-            <mat-select formControlName="groupes" multiple>
-              @for (groupe of groupesDisponibles(); track groupe.id) {
-                <mat-option [value]="groupe.id">{{ groupe.nom }}</mat-option>
-              }
-            </mat-select>
-            <mat-hint>Un profil peut appartenir à plusieurs groupes.</mat-hint>
-          </mat-form-field>
-
-          <app-text-field label="Prime commerciale" icon="payments" type="number" formControlName="prime" />
+          </div>
         </div>
 
-        <app-form-section label="Statut" icon="toggle_on" />
+        <div class="profil-form__two-col">
+          <div>
+            <app-form-section label="Informations personnelles" icon="badge" />
 
-        <mat-checkbox class="form-page__actif" formControlName="actif">Profil actif</mat-checkbox>
+            <div class="profil-form__grid profil-form__grid--2col">
+              <app-text-field
+                label="Matricule"
+                icon="tag"
+                formControlName="matricule"
+                [maxLength]="100"
+                [errorMessage]="matricule.hasError('maxlength') ? 'Le matricule ne doit pas dépasser 100 caractères.' : null"
+              />
+              <app-text-field
+                label="Email"
+                icon="mail_outline"
+                type="email"
+                formControlName="email"
+                [required]="true"
+                [maxLength]="100"
+                [errorMessage]="
+                  email.hasError('required') && email.touched
+                    ? 'Un email valide est requis.'
+                    : email.hasError('email') && email.touched
+                      ? 'Un email valide est requis.'
+                      : email.hasError('maxlength')
+                        ? 'L’email ne doit pas dépasser 100 caractères.'
+                        : null
+                "
+              />
+              <app-text-field
+                label="Nom"
+                icon="person_outline"
+                formControlName="nom"
+                [required]="true"
+                [maxLength]="30"
+                [errorMessage]="
+                  nom.hasError('required') && nom.touched
+                    ? 'Le nom est requis.'
+                    : nom.hasError('maxlength')
+                      ? 'Le nom ne doit pas dépasser 30 caractères.'
+                      : null
+                "
+              />
+              <app-text-field
+                label="Prénom"
+                icon="person_outline"
+                formControlName="prenom"
+                [required]="true"
+                [maxLength]="100"
+                [errorMessage]="
+                  prenom.hasError('required') && prenom.touched
+                    ? 'Le prénom est requis.'
+                    : prenom.hasError('maxlength')
+                      ? 'Le prénom ne doit pas dépasser 100 caractères.'
+                      : null
+                "
+              />
+              <app-text-field
+                label="Téléphone"
+                icon="call"
+                formControlName="telephone"
+                [maxLength]="50"
+                [errorMessage]="telephone.hasError('maxlength') ? 'Le téléphone ne doit pas dépasser 50 caractères.' : null"
+              />
+              <app-text-field
+                label="Adresse"
+                icon="place"
+                formControlName="adresse"
+                [maxLength]="200"
+                [errorMessage]="adresse.hasError('maxlength') ? 'L’adresse ne doit pas dépasser 200 caractères.' : null"
+              />
+            </div>
+          </div>
+
+          <div>
+            <app-form-section label="Affectation" icon="account_tree" />
+
+            <div class="profil-form__grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Entité</mat-label>
+                <mat-icon matPrefix>apartment</mat-icon>
+                <mat-select formControlName="entite" required>
+                  @for (organe of organes(); track organe.id) {
+                    <mat-option [value]="organe.id">{{ organe.organe }}</mat-option>
+                  }
+                </mat-select>
+                @if (entite.hasError('required') && entite.touched) {
+                  <mat-error>L'entité est requise.</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Fonction</mat-label>
+                <mat-icon matPrefix>work_outline</mat-icon>
+                <mat-select formControlName="fonction" required>
+                  @for (fonction of fonctions(); track fonction.id) {
+                    <mat-option [value]="fonction.id">{{ fonction.fonction }}</mat-option>
+                  }
+                </mat-select>
+                @if (fonction.hasError('required') && fonction.touched) {
+                  <mat-error>La fonction est requise.</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profil-form__full">
+                <mat-label>Groupes</mat-label>
+                <mat-icon matPrefix>group</mat-icon>
+                <mat-select formControlName="groupes" multiple>
+                  @for (groupe of groupesDisponibles(); track groupe.id) {
+                    <mat-option [value]="groupe.id">{{ groupe.nom }}</mat-option>
+                  }
+                </mat-select>
+                <mat-hint>Un profil peut appartenir à plusieurs groupes.</mat-hint>
+              </mat-form-field>
+
+              <app-text-field label="Prime commerciale" icon="payments" type="number" formControlName="prime" />
+
+              <div class="profil-form__status-field">
+                <span class="profil-form__status-label">Statut</span>
+                <mat-slide-toggle formControlName="actif">Profil actif</mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="form-page__actions">
           <app-form-actions [isEdit]="isEdit" [submitting]="isSubmitting()" (cancel)="cancel()" />

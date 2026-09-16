@@ -25,8 +25,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  max-height: 220px;
-  overflow-y: auto;
 }
 
 .groupe-form__permission-chip {
@@ -36,9 +34,15 @@
   color: var(--color-brand-700);
   font-size: 0.8rem;
   font-weight: 600;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .groupe-form__permissions {
+  /* Un <fieldset> a une largeur min. intrinsèque imposée par le navigateur (ignore
+   * min-width: 0 du parent grid) — sans cette règle, un nom de permission long sans espace
+   * peut provoquer un débordement horizontal malgré overflow-x: hidden sur les ancêtres. */
+  min-width: 0;
   border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 0.85rem 1rem;
@@ -47,6 +51,15 @@
   gap: 0.5rem;
   max-height: 220px;
   overflow-y: auto;
+}
+
+.groupe-form__permissions mat-checkbox {
+  display: block;
+  max-width: 100%;
+}
+
+.groupe-form__permissions mat-checkbox .mdc-label {
+  overflow-wrap: anywhere;
 }
 
 .groupe-form__permissions legend {

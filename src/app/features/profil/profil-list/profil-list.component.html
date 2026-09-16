@@ -131,10 +131,17 @@
             [routerLink]="['/profils', row.profil.id]"
             [queryParams]="{ readonly: 1 }"
             aria-label="Voir le détail"
+            matTooltip="Voir le détail"
           >
             <mat-icon>visibility</mat-icon>
           </button>
-          <button mat-icon-button (click)="$event.stopPropagation()" [routerLink]="['/profils', row.profil.id]" aria-label="Modifier">
+          <button
+            mat-icon-button
+            (click)="$event.stopPropagation()"
+            [routerLink]="['/profils', row.profil.id]"
+            aria-label="Modifier"
+            matTooltip="Modifier"
+          >
             <mat-icon>edit</mat-icon>
           </button>
         </td>

@@ -6,17 +6,28 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Avatar cliquable : le bouton "Changer la photo" est fusionné dans l'avatar lui-même (survol
+ * = overlay caméra) plutôt qu'un lien texte séparé en dessous — pattern plus moderne (Linear,
+ * Notion) et qui rend explicite que toute la zone est cliquable, pas juste le petit lien. */
 .profil-form__photo-preview {
-  width: 72px;
-  height: 72px;
+  position: relative;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
   overflow: hidden;
   background: var(--color-surface-muted);
+  border: 2px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-text-muted);
   flex-shrink: 0;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.profil-form__photo-preview:hover {
+  border-color: var(--color-brand-500);
 }
 
 .profil-form__photo-preview img {
@@ -25,18 +36,68 @@
   object-fit: cover;
 }
 
-.profil-form__photo-upload {
-  display: inline-flex;
+.profil-form__photo-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--color-brand-600);
-  cursor: pointer;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-text-primary) 55%, transparent);
+  color: var(--color-white);
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
-.profil-form__photo-upload:hover {
-  color: var(--color-brand-700);
+.profil-form__photo-overlay mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.profil-form__photo-preview:hover .profil-form__photo-overlay {
+  opacity: 1;
+}
+
+.profil-form__photo-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.profil-form__photo-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.profil-form__photo-hint {
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+.profil-form__photo-remove {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-error-solid);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.profil-form__photo-remove mat-icon {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+}
+
+.profil-form__photo-remove:hover {
+  text-decoration: underline;
 }
 
 .profil-form__grid {
@@ -55,8 +116,58 @@
   grid-column: 1 / -1;
 }
 
+/* Statut replié dans la grille "Affectation" (à côté de la Prime) plutôt qu'en section pleine
+ * largeur avec son propre en-tête/bordure — celle-ci prenait une hauteur disproportionnée pour
+ * un simple interrupteur. */
+.profil-form__status-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  justify-content: center;
+}
+
+.profil-form__status-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+/* "Informations personnelles" et "Affectation" côte à côte plutôt qu'empilées — nécessite le
+ * formulaire large (.form-page--wide, 1080px) pour rester lisible ; en dessous de 1100px les
+ * deux colonnes n'auraient plus assez de place chacune et on repasse à l'empilement vertical. */
+.profil-form__two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 2rem;
+  align-items: start;
+}
+
+.profil-form__grid--2col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Espace entre les deux blocs quand ils s'empilent (<1100px) — sans effet notable en mode
+ * côte à côte puisque align-items: start ne les étire pas l'un vers l'autre. */
+.profil-form__two-col > div:first-child {
+  margin-bottom: 1.1rem;
+}
+
+@media (max-width: 1100px) {
+  .profil-form__two-col {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
 @media (max-width: 640px) {
-  .profil-form__grid {
+  .profil-form__grid,
+  .profil-form__grid--2col {
     grid-template-columns: 1fr;
   }
 }

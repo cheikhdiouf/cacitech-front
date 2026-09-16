@@ -34,5 +34,7 @@ export interface CreateProfilRequest {
   actif: boolean;
   prime: number;
   photo: File | null;
+  /** true = supprimer la photo existante côté serveur (aucun nouveau fichier sélectionné). */
+  removePhoto?: boolean;
   groupes: string[];
 }

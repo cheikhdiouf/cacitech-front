@@ -115,10 +115,10 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
         <td mat-cell *matCellDef="let fonction">
-          <button mat-icon-button (click)="$event.stopPropagation(); openDetail(fonction)" aria-label="Voir le détail">
+          <button mat-icon-button (click)="$event.stopPropagation(); openDetail(fonction)" aria-label="Voir le détail" matTooltip="Voir le détail">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button mat-icon-button (click)="$event.stopPropagation(); openEdit(fonction)" aria-label="Modifier">
+          <button mat-icon-button (click)="$event.stopPropagation(); openEdit(fonction)" aria-label="Modifier" matTooltip="Modifier">
             <mat-icon>edit</mat-icon>
           </button>
         </td>

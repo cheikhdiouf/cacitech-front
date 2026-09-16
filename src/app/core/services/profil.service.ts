@@ -90,6 +90,10 @@ export class ProfilService {
     }
     if (request.photo) {
       formData.set('photo', request.photo);
+    } else if (request.removePhoto) {
+      /** Chaîne vide plutôt qu'omettre le champ : sur un FileField DRF, une clé absente laisse
+       * la valeur existante inchangée — il faut une valeur vide explicite pour la supprimer. */
+      formData.set('photo', '');
     }
     request.groupes.forEach((groupeId) => formData.append('groupes', groupeId));
 

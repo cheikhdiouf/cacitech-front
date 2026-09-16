@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { forkJoin } from 'rxjs';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ProfilService } from '../../../core/services/profil.service';
 import { OrganigrammeService } from '../../../core/services/organigramme.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -17,6 +16,7 @@ import { TextFieldComponent } from '../../../shared/components/text-field/text-f
 import { FormActionsComponent } from '../../../shared/components/form-actions/form-actions.component';
 import { FormSectionComponent } from '../../../shared/components/form-section/form-section.component';
 import { DetailFieldComponent } from '../../../shared/components/detail-field/detail-field.component';
+import { BreadcrumbComponent } from '../../../shared/layout/breadcrumb/breadcrumb.component';
 import { Profil } from '../../../core/models/profil.models';
 
 const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
@@ -27,17 +27,17 @@ const ALLOWED_PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    RouterLink,
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatCheckboxModule,
+    MatSlideToggleModule,
     TextFieldComponent,
     FormActionsComponent,
     FormSectionComponent,
-    DetailFieldComponent
+    DetailFieldComponent,
+    BreadcrumbComponent
   ],
   templateUrl: './profil-form.component.html',
   styleUrl: './profil-form.component.css',
@@ -86,6 +86,10 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
     return prime != null ? `${prime} FCFA` : '—';
   });
   private photoFile: File | null = null;
+  /** true = l'utilisateur a explicitement retiré la photo existante (à distinguer de "aucun
+   * changement") — sinon impossible de faire la différence entre "ne rien changer" et
+   * "supprimer la photo" au moment de construire le payload. */
+  private photoRemoved = false;
   /** URL blob locale (aperçu avant upload) — distincte de l'URL serveur, à révoquer nous-mêmes. */
   private objectUrl: string | null = null;
 
@@ -136,57 +140,62 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const reference$ = forkJoin([
-      this.organigrammeService.listOrganes(),
-      this.organigrammeService.listFonctions(),
-      this.profilService.listGroupes()
-    ]);
+    /** Listes de référence chargées en parallèle et indépendamment du reste : elles ne
+     * bloquent que le remplissage des menus déroulants, jamais l'affichage du formulaire
+     * lui-même — même pattern non bloquant que les popups organe/fonction/groupe. Chaque
+     * appel passe par un RequestCache, donc déjà quasi instantané après le premier chargement
+     * de l'app. */
+    this.organigrammeService.listOrganes().subscribe({
+      next: (organes) => this.organes.set(organes),
+      error: () => this.notification.error('Impossible de charger les entités.')
+    });
+    this.organigrammeService.listFonctions().subscribe({
+      next: (fonctions) => this.fonctions.set(fonctions),
+      error: () => this.notification.error('Impossible de charger les fonctions.')
+    });
+    this.profilService.listGroupes().subscribe({
+      next: (groupes) => this.groupesDisponibles.set(groupes),
+      error: () => this.notification.error('Impossible de charger les groupes.')
+    });
 
-    if (this.isEdit) {
-      forkJoin([reference$, this.profilService.detailProfil(this.profilId!)]).subscribe({
-        next: ([[organes, fonctions, groupes], profil]) => {
-          this.organes.set(organes);
-          this.fonctions.set(fonctions);
-          this.groupesDisponibles.set(groupes);
-          this.form.patchValue({
-            matricule: profil.matricule ?? '',
-            email: profil.email,
-            nom: profil.nom,
-            prenom: profil.prenom,
-            entite: profil.entite,
-            fonction: profil.fonction,
-            telephone: profil.telephone ?? '',
-            adresse: profil.adresse ?? '',
-            prime: profil.prime,
-            actif: profil.actif,
-            groupes: profil.groupes
-          });
-          this.photoPreview.set(profil.photo);
-          this.detailView.set(profil);
-          if (this.readOnly) {
-            this.form.disable();
-          }
-          this.loading.set(false);
-        },
-        error: () => {
-          this.notification.error('Impossible de charger le profil.');
-          this.loading.set(false);
-        }
-      });
-    } else {
-      reference$.subscribe({
-        next: ([organes, fonctions, groupes]) => {
-          this.organes.set(organes);
-          this.fonctions.set(fonctions);
-          this.groupesDisponibles.set(groupes);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.notification.error('Impossible de charger les données de référence.');
-          this.loading.set(false);
-        }
-      });
+    if (!this.isEdit) {
+      /** Création : rien à attendre, le formulaire est utilisable immédiatement — les
+       * menus déroulants se peuplent en arrière-plan dès que les listes ci-dessus arrivent. */
+      this.loading.set(false);
+      return;
     }
+
+    /** Édition/détail : contrairement aux popups, cette page n'a pas de ligne déjà connue
+     * (passée via MAT_DIALOG_DATA) à afficher pendant le chargement — seul l'id de route est
+     * disponible, donc le détail du profil reste la seule attente réellement incompressible
+     * avant de pouvoir peupler le formulaire. */
+    this.profilService.detailProfil(this.profilId!).subscribe({
+      next: (profil) => {
+        this.form.patchValue({
+          matricule: profil.matricule ?? '',
+          email: profil.email,
+          nom: profil.nom,
+          prenom: profil.prenom,
+          entite: profil.entite,
+          fonction: profil.fonction,
+          telephone: profil.telephone ?? '',
+          adresse: profil.adresse ?? '',
+          prime: profil.prime,
+          actif: profil.actif,
+          groupes: profil.groupes
+        });
+        this.photoPreview.set(profil.photo);
+        this.detailView.set(profil);
+        if (this.readOnly) {
+          this.form.disable();
+        }
+        this.loading.set(false);
+      },
+      error: () => {
+        this.notification.error('Impossible de charger le profil.');
+        this.loading.set(false);
+      }
+    });
   }
 
   onPhotoSelected(event: Event): void {
@@ -209,9 +218,19 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
     }
 
     this.photoFile = file;
+    this.photoRemoved = false;
     this.revokeObjectUrl();
     this.objectUrl = URL.createObjectURL(file);
     this.photoPreview.set(this.objectUrl);
+  }
+
+  removePhoto(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.photoFile = null;
+    this.photoRemoved = true;
+    this.revokeObjectUrl();
+    this.photoPreview.set(null);
   }
 
   ngOnDestroy(): void {
@@ -249,6 +268,7 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
       actif: raw.actif,
       prime: raw.prime,
       photo: this.photoFile,
+      removePhoto: this.photoRemoved,
       groupes: raw.groupes
     };
 
