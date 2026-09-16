@@ -1,0 +1,9 @@
+<div class="table-skeleton" role="status" aria-label="Chargement des données">
+  @for (row of rowArray; track row) {
+    <div class="table-skeleton__row">
+      @for (col of columnArray; track col) {
+        <span class="table-skeleton__cell"></span>
+      }
+    </div>
+  }
+</div>

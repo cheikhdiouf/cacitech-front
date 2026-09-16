@@ -11,7 +11,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TableSkeletonComponent } from '../../shared/components/table-skeleton/table-skeleton.component';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
@@ -28,7 +28,7 @@ import { BreadcrumbComponent } from '../../shared/layout/breadcrumb/breadcrumb.c
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    MatProgressSpinnerModule,
+    TableSkeletonComponent,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,

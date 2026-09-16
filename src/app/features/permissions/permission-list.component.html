@@ -26,8 +26,8 @@
 </div>
 
 @if (loading()) {
-  <div class="list-page__state">
-    <mat-spinner diameter="32"></mat-spinner>
+  <div class="list-page__table-wrap">
+    <app-table-skeleton [columns]="displayedColumns.length" />
   </div>
 } @else if (error()) {
   <div class="list-page__state list-page__state--error">

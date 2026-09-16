@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TableSkeletonComponent } from '../../../shared/components/table-skeleton/table-skeleton.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -36,7 +36,7 @@ import { GroupeFormComponent } from '../groupe-form/groupe-form.component';
     MatButtonModule,
     MatCheckboxModule,
     MatMenuModule,
-    MatProgressSpinnerModule,
+    TableSkeletonComponent,
     MatSlideToggleModule,
     MatTableModule,
     MatSortModule,
