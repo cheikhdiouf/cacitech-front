@@ -140,7 +140,7 @@
   border: 1px solid var(--color-border);
   border-radius: 14px;
   box-shadow: var(--shadow-sm);
-  overflow-x: auto;
+  overflow: hidden;
 }
 
 /* mat-table (MDC) applique ses propres styles de base (padding, bordures, ripple sur les
@@ -170,20 +170,41 @@
   padding: 0;
 }
 
-.list-page__table thead th {
-  color: var(--color-text-muted);
-  font-weight: 600;
-  font-size: 0.75rem;
+.list-page__table thead th,
+.list-page__table .mat-mdc-header-cell {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: var(--color-white) !important;
+  font-weight: 700;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background: var(--color-surface-muted);
-  border-bottom: 1px solid var(--color-border);
+  letter-spacing: 0.05em;
+  background-color: var(--color-brand-500) !important;
+  border-bottom: 1px solid var(--color-brand-600) !important;
   white-space: nowrap;
+}
+
+.list-page__table .mat-sort-header-container {
+  gap: 0.2rem;
+  color: var(--color-white) !important;
+}
+
+.list-page__table .mat-sort-header-arrow {
+  color: var(--color-white) !important;
+}
+
+/* Case à cocher "tout sélectionner" dans l'en-tête bleu : bordure blanche plutôt que le gris
+ * par défaut, peu visible sur fond de couleur. */
+.list-page__table thead .mat-mdc-checkbox {
+  --mdc-checkbox-unselected-icon-color: var(--color-white);
+  --mdc-checkbox-unselected-hover-icon-color: var(--color-white);
+  --mdc-checkbox-unselected-pressed-icon-color: var(--color-white);
 }
 
 .list-page__table tbody tr {
   border-bottom: 1px solid var(--color-border);
-  transition: background-color 0.12s ease;
+  transition: background-color 0.14s ease, box-shadow 0.14s ease;
 }
 
 .list-page__table tbody tr:last-child {
@@ -192,6 +213,7 @@
 
 .list-page__table tbody tr:hover {
   background-color: var(--color-surface-muted);
+  box-shadow: inset 3px 0 0 var(--color-brand-500);
 }
 
 /* Ligne cliquable (ouvre l'édition) : curseur + surbrillance au focus clavier, sur les
@@ -226,16 +248,27 @@
 .list-page__table button[mat-icon-button] {
   color: var(--color-text-muted);
   border-radius: 8px;
-  transition: color 0.12s ease, background-color 0.12s ease;
+  transition: color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
 }
 
 .list-page__table button[mat-icon-button]:hover {
   color: var(--color-brand-600);
   background-color: var(--color-brand-tint);
+  transform: scale(1.06);
 }
 
 .list-page__empty {
   text-align: center;
   color: var(--color-text-muted);
   padding: 2.5rem 1rem;
+}
+
+/* Paginator fondu dans la carte (au lieu d'un bloc Material par défaut disjoint). */
+.list-page__table-wrap mat-paginator {
+  background: var(--color-surface-muted);
+  border-top: 1px solid var(--color-border);
+}
+
+.list-page__table-wrap .mat-mdc-paginator {
+  --mat-paginator-container-text-size: 0.78rem;
 }

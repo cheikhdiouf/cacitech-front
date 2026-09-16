@@ -42,9 +42,9 @@ export class SidebarComponent implements OnInit {
       label: 'Paramétrage',
       icon: 'settings',
       children: [
-        { label: 'Permissions', icon: 'lock_outline', route: '/permissions' },
-        { label: 'Profils', icon: 'badge', route: '/profils', groupLabel: 'Profils' },
-        { label: 'Groupes', icon: 'group', route: '/profils/groupes' }
+        { label: 'Profils', icon: 'badge', route: '/profils', groupLabel: 'Utilisateurs' },
+        { label: 'Groupes', icon: 'group', route: '/profils/groupes', groupLabel: "Contrôle d'accès" },
+        { label: 'Permissions', icon: 'lock_outline', route: '/permissions' }
       ]
     },
     {

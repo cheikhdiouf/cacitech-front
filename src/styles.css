@@ -3,7 +3,14 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; color: var(--color-text-primary); }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
 
 /* Supprime le contour de focus bleu par défaut du navigateur sur toute l'application. */
 a:focus,

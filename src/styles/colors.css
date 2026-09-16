@@ -1,21 +1,44 @@
 /**
- * Palette centralisée de l'application.
- * Toute couleur utilisée dans les styles globaux ou les composants doit
- * référencer une de ces variables plutôt qu'un code couleur en dur.
+ * Palette centralisée de l'application — un seul jeu de couleurs de base, chaque usage
+ * (sidebar, tableaux, popups...) référence ces rôles plutôt que de redéfinir ses propres
+ * teintes. Objectif : une charte simple à auditer d'un coup d'œil, pas dix variantes de gris
+ * ou de bleu qui divergent avec le temps.
+ *
+ * Rôles disponibles :
+ *  - brand      : couleur de marque (boutons primaires, liens, accents, sélection)
+ *  - text       : texte (primary = corps de texte, muted = libellés secondaires)
+ *  - surface    : fonds (page, carte, carte en retrait)
+ *  - border     : séparateurs
+ *  - success/error : retours d'état sémantiques
+ *  - shadow     : élévation
+ *
+ * Toute couleur utilisée dans les styles globaux ou les composants doit référencer une de
+ * ces variables plutôt qu'un code couleur en dur.
  */
 :root {
-   /* Marque — indigo moderne, teinte de référence des UI ERP/CRM actuelles (Linear, Stripe,
-     Salesforce Lightning). */
-   --color-brand-500: #4f46e5;
-   --color-brand-600: #4338ca;
-   --color-brand-700: #3730a3;
-   --color-brand-tint: rgba(79, 70, 229, 0.1);
+   /* Marque — bleu franc unique pour toute l'app (sidebar, boutons, liens, en-têtes de
+     tableau, sélection...), une seule teinte de référence pour rester immédiatement
+     reconnaissable comme "bleu" plutôt que plusieurs bleus/indigos proches. */
+   --color-brand-500: #2563eb;
+   --color-brand-600: #1d4ed8;
+   --color-brand-700: #1e40af;
+   --color-brand-tint: rgba(37, 99, 235, 0.1);
 
-   /* Neutres — échelle slate moderne (ERP/CRM : Salesforce Lightning, Linear, Odoo 17). */
+   /* Neutres — texte. Le "muted" est volontairement plus foncé que le gris clair habituel
+     (#8b93a1 ne passait pas 4.5:1 sur fond blanc) pour rester lisible sur les libellés
+     secondaires des tableaux et menus. */
    --color-white: #ffffff;
-   --color-background: #f6f7f9;
    --color-text-primary: #1c2230;
-   --color-text-muted: #8b93a1;
+   --color-text-muted: #667085;
+
+   /* Neutres — fonds. Trois niveaux seulement : fond de page (derrière les cartes), surface
+     (carte blanche) et surface-muted (zone en retrait à l'intérieur d'une carte : en-tête de
+     tableau, squelette de chargement) — volontairement distinct du fond de page pour que les
+     deux ne se confondent pas. */
+   --color-background: #f6f7f9;
+   --color-surface: #ffffff;
+   --color-surface-muted: #eef0f4;
+   --color-border: #e3e6eb;
 
    /* Sémantique - succès */
    --color-success-bg: #e8f7ee;
@@ -29,20 +52,16 @@
    --color-error-text: #7a1e1e;
    --color-error-solid: #dc2626;
 
-   /* Layout applicatif (navbar) — thème clair uniquement */
-   --color-surface: #ffffff;
-   --color-surface-muted: #f2f3f6;
-   --color-border: #e3e6eb;
-
-   /* Sidebar — habillage clair et épuré (Linear, HubSpot, Salesforce Lightning) : fond blanc
-     plutôt qu'un aplat gris, juste une bordure fine pour séparer du contenu. */
-   --color-sidebar-bg: #ffffff;
-   --color-sidebar-bg-elevated: #f6f7f9;
+   /* Sidebar — alias des rôles ci-dessus plutôt que des teintes indépendantes : la sidebar
+     partage exactement la même charte que le reste de l'app (fond blanc épuré à la Linear/
+     HubSpot, juste une bordure fine), un seul jeu de couleurs à maintenir. */
+   --color-sidebar-bg: var(--color-surface);
+   --color-sidebar-bg-elevated: var(--color-background);
    --color-sidebar-bg-active: var(--color-brand-tint);
-   --color-sidebar-border: #edeef1;
+   --color-sidebar-border: var(--color-border);
    --color-sidebar-accent: var(--color-brand-600);
-   --color-sidebar-text: #1c2230;
-   --color-sidebar-text-muted: #8b93a1;
+   --color-sidebar-text: var(--color-text-primary);
+   --color-sidebar-text-muted: var(--color-text-muted);
 
    /* Élévation */
    --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
