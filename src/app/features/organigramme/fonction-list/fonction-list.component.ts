@@ -4,7 +4,6 @@ import {
   Component,
   OnInit,
   ViewChild,
-  computed,
   effect,
   inject,
   signal
@@ -24,6 +23,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Fonction } from '../../../core/models/organigramme.models';
 import { toggleActif, bulkSetActif } from '../../../core/utils/toggle-actif';
 import { TableSelection } from '../../../core/utils/table-selection';
+import { makeFilterPredicate } from '../../../core/utils/table-filter';
 import { exportToExcel, exportToPdf } from '../../../core/utils/table-export';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
 import { BreadcrumbComponent } from '../../../shared/layout/breadcrumb/breadcrumb.component';
@@ -77,8 +77,10 @@ export class FonctionListComponent implements OnInit, AfterViewInit {
       this.dataSource.data = this.fonctions();
     });
 
-    this.dataSource.filterPredicate = (fonction, filter) =>
-      fonction.fonction.toLowerCase().includes(filter) || (fonction.abreviation ?? '').toLowerCase().includes(filter);
+    this.dataSource.filterPredicate = makeFilterPredicate<Fonction>(
+      (fonction) => fonction.fonction,
+      (fonction) => fonction.abreviation
+    );
 
     this.dataSource.sortingDataAccessor = (fonction, columnId) => {
       switch (columnId) {

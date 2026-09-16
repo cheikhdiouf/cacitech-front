@@ -9,11 +9,14 @@ import {
   inject,
   signal
 } from '@angular/core';
+import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { TableSkeletonComponent } from '../../../shared/components/table-skeleton/table-skeleton.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -24,6 +27,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Organe } from '../../../core/models/organigramme.models';
 import { toggleActif, bulkSetActif } from '../../../core/utils/toggle-actif';
 import { TableSelection } from '../../../core/utils/table-selection';
+import { makeFilterPredicate } from '../../../core/utils/table-filter';
 import { exportToExcel, exportToPdf } from '../../../core/utils/table-export';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
 import { BreadcrumbComponent } from '../../../shared/layout/breadcrumb/breadcrumb.component';
@@ -35,15 +39,22 @@ interface OrganeRow {
   tutelleLabel: string;
 }
 
+interface OrganeNode {
+  organe: Organe;
+  children: OrganeNode[];
+}
+
 @Component({
   selector: 'app-organe-list',
   standalone: true,
   imports: [
     MatIconModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatCheckboxModule,
     MatMenuModule,
     MatTooltipModule,
+    MatTreeModule,
     TableSkeletonComponent,
     MatSlideToggleModule,
     MatTableModule,
@@ -53,6 +64,7 @@ interface OrganeRow {
     BreadcrumbComponent
   ],
   templateUrl: './organe-list.component.html',
+  styleUrl: './organe-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrganeListComponent implements OnInit, AfterViewInit {
@@ -74,8 +86,40 @@ export class OrganeListComponent implements OnInit, AfterViewInit {
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly search = signal('');
+  readonly viewMode = signal<'table' | 'tree'>('tree');
 
   readonly dataSource = new MatTableDataSource<OrganeRow>([]);
+
+  readonly treeControl = new NestedTreeControl<OrganeNode>((node) => node.children);
+  readonly treeDataSource = new MatTreeNestedDataSource<OrganeNode>();
+  readonly hasChild = (_: number, node: OrganeNode): boolean => node.children.length > 0;
+
+  /** Arbre reconstruit depuis la liste plate via `organe_superieure` — racines et frères triés
+   * alphabétiquement à chaque niveau, pour une hiérarchie stable et lisible plutôt que
+   * l'ordre brut renvoyé par l'API. */
+  readonly tree = computed<OrganeNode[]>(() => {
+    const organes = this.organes();
+    const byId = new Set(organes.map((o) => o.id));
+    const childrenByParent = new Map<string | null, Organe[]>();
+
+    for (const organe of organes) {
+      const parentId = organe.organe_superieure && byId.has(organe.organe_superieure) ? organe.organe_superieure : null;
+      const siblings = childrenByParent.get(parentId) ?? [];
+      siblings.push(organe);
+      childrenByParent.set(parentId, siblings);
+    }
+
+    for (const siblings of childrenByParent.values()) {
+      siblings.sort((a, b) => a.organe.localeCompare(b.organe));
+    }
+
+    const buildNode = (organe: Organe): OrganeNode => ({
+      organe,
+      children: (childrenByParent.get(organe.id) ?? []).map(buildNode)
+    });
+
+    return (childrenByParent.get(null) ?? []).map(buildNode);
+  });
 
   /** Noms résolus une seule fois par chargement — évite un find() par ligne à chaque rendu. */
   readonly rows = computed<OrganeRow[]>(() => {
@@ -96,8 +140,23 @@ export class OrganeListComponent implements OnInit, AfterViewInit {
       this.dataSource.data = this.rows();
     });
 
-    this.dataSource.filterPredicate = (row, filter) =>
-      row.organe.organe.toLowerCase().includes(filter) || row.organe.abreviation.toLowerCase().includes(filter);
+    /** Racines dépliées par défaut (premier niveau visible d'un coup), enfants repliés — un
+     * organigramme complet développé d'entrée serait illisible dès qu'il dépasse quelques
+     * dizaines d'entités. */
+    effect(() => {
+      const tree = this.tree();
+      this.treeDataSource.data = tree;
+      /** NestedTreeControl.expandAll()/collapseAll() itèrent sur `dataNodes` (les racines) —
+       * ce n'est PAS assigné automatiquement par MatTree contrairement à ce qu'on pourrait
+       * penser, sans quoi ces deux méthodes ne font rien silencieusement. */
+      this.treeControl.dataNodes = tree;
+      tree.forEach((node) => this.treeControl.expand(node));
+    });
+
+    this.dataSource.filterPredicate = makeFilterPredicate<OrganeRow>(
+      (row) => row.organe.organe,
+      (row) => row.organe.abreviation
+    );
 
     this.dataSource.sortingDataAccessor = (row, columnId) => {
       switch (columnId) {
@@ -118,6 +177,18 @@ export class OrganeListComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.dataSource.sort = this.matSort;
     this.dataSource.paginator = this.matPaginator;
+  }
+
+  setViewMode(mode: 'table' | 'tree'): void {
+    this.viewMode.set(mode);
+  }
+
+  expandAll(): void {
+    this.treeControl.expandAll();
+  }
+
+  collapseAll(): void {
+    this.treeControl.collapseAll();
   }
 
   onSearchChange(value: string): void {

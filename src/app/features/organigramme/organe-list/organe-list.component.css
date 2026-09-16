@@ -1,0 +1,193 @@
+/* Bascule Tableau / Arbre — segmenté, cohérent avec le reste des boutons d'en-tête de liste. */
+.organe-tree__view-toggle {
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.organe-tree__view-toggle .mat-button-toggle-appearance-standard {
+  --mat-standard-button-toggle-height: 40px;
+}
+
+.organe-tree__wrap {
+  padding: 1rem 1.25rem 1.5rem;
+  overflow-x: auto;
+}
+
+.organe-tree__toolbar {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.organe-tree__toolbar button[mat-stroked-button] {
+  border-radius: 10px;
+  height: 36px;
+  padding: 0 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 500;
+  font-size: 0.82rem;
+}
+
+.organe-tree {
+  background: transparent;
+}
+
+.organe-tree__node {
+  min-width: 0;
+}
+
+/* Ligne d'un nœud : icône + nom + statut + actions, alignés sur une grille horizontale
+ * compacte plutôt qu'un simple flex — pour que le statut et les actions restent alignés
+ * verticalement d'un nœud à l'autre malgré la longueur variable des noms. */
+.organe-tree__row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0.3rem 0.6rem 0.3rem 0.3rem;
+  border-radius: 10px;
+  transition: background-color 0.15s ease;
+}
+
+.organe-tree__row:hover {
+  background-color: var(--color-surface-muted);
+}
+
+.organe-tree__toggle {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  --mdc-icon-button-state-layer-size: 34px;
+  color: var(--color-text-muted);
+}
+
+.organe-tree__toggle-icon {
+  transition: transform 0.18s ease;
+}
+
+.organe-tree__toggle-icon--expanded {
+  transform: rotate(90deg);
+}
+
+.organe-tree__toggle-spacer {
+  flex-shrink: 0;
+  width: 34px;
+}
+
+.organe-tree__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.organe-tree__icon mat-icon {
+  font-size: 17px;
+  height: 17px;
+  width: 17px;
+}
+
+.organe-tree__icon--parent {
+  background: var(--color-brand-tint);
+  border-color: color-mix(in srgb, var(--color-brand-500) 25%, transparent);
+  color: var(--color-brand-600);
+}
+
+.organe-tree__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.organe-tree__name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.organe-tree__name--root {
+  font-weight: 700;
+}
+
+.organe-tree__abbr {
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.organe-tree__status {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: var(--color-success-bg);
+  color: var(--color-success-solid);
+}
+
+.organe-tree__status--inactive {
+  background: var(--color-error-bg);
+  color: var(--color-error-solid);
+}
+
+.organe-tree__actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.organe-tree__actions button[mat-icon-button] {
+  width: 32px;
+  height: 32px;
+  --mdc-icon-button-state-layer-size: 32px;
+  color: var(--color-text-muted);
+  border-radius: 8px;
+}
+
+.organe-tree__actions button[mat-icon-button]:hover {
+  color: var(--color-brand-600);
+  background-color: var(--color-brand-tint);
+}
+
+.organe-tree__actions mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+/* Connecteur vertical façon organigramme classique : un trait en pointillés qui relie
+ * visuellement chaque groupe d'enfants à son parent. */
+.organe-tree__outlet {
+  margin-left: 1rem;
+  padding-left: 1.1rem;
+  border-left: 1px dashed var(--color-border);
+}
+
+.organe-tree__outlet--hidden {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .organe-tree__abbr {
+    display: none;
+  }
+}

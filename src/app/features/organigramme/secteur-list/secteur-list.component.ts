@@ -23,6 +23,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { SecteurActivite } from '../../../core/models/parametrage.models';
 import { toggleActif, bulkSetActif } from '../../../core/utils/toggle-actif';
 import { TableSelection } from '../../../core/utils/table-selection';
+import { makeFilterPredicate } from '../../../core/utils/table-filter';
 import { exportToExcel, exportToPdf } from '../../../core/utils/table-export';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
 import { BreadcrumbComponent } from '../../../shared/layout/breadcrumb/breadcrumb.component';
@@ -76,8 +77,10 @@ export class SecteurListComponent implements OnInit, AfterViewInit {
       this.dataSource.data = this.secteurs();
     });
 
-    this.dataSource.filterPredicate = (secteur, filter) =>
-      secteur.libelle.toLowerCase().includes(filter) || (secteur.description ?? '').toLowerCase().includes(filter);
+    this.dataSource.filterPredicate = makeFilterPredicate<SecteurActivite>(
+      (secteur) => secteur.libelle,
+      (secteur) => secteur.description
+    );
 
     this.dataSource.sortingDataAccessor = (secteur, columnId) => {
       switch (columnId) {

@@ -4,7 +4,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { forkJoin } from 'rxjs';
 import { ProfilService } from '../../../core/services/profil.service';
 import { PermissionService } from '../../../core/services/permission.service';
 import { NotificationService } from '../../../core/services/notification.service';

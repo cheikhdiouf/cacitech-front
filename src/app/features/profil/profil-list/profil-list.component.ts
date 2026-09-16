@@ -27,6 +27,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Profil } from '../../../core/models/profil.models';
 import { toggleActif, bulkSetActif } from '../../../core/utils/toggle-actif';
 import { TableSelection } from '../../../core/utils/table-selection';
+import { makeFilterPredicate } from '../../../core/utils/table-filter';
 import { exportToExcel, exportToPdf } from '../../../core/utils/table-export';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
 import { BreadcrumbComponent } from '../../../shared/layout/breadcrumb/breadcrumb.component';
@@ -103,10 +104,11 @@ export class ProfilListComponent implements OnInit, AfterViewInit {
       this.dataSource.data = this.rows();
     });
 
-    this.dataSource.filterPredicate = (row, filter) =>
-      row.profil.nom.toLowerCase().includes(filter) ||
-      row.profil.prenom.toLowerCase().includes(filter) ||
-      row.profil.email.toLowerCase().includes(filter);
+    this.dataSource.filterPredicate = makeFilterPredicate<ProfilRow>(
+      (row) => row.profil.nom,
+      (row) => row.profil.prenom,
+      (row) => row.profil.email
+    );
 
     this.dataSource.sortingDataAccessor = (row, columnId) => {
       switch (columnId) {

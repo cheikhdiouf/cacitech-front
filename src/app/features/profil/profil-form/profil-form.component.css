@@ -70,11 +70,6 @@
   color: var(--color-text-primary);
 }
 
-.profil-form__photo-hint {
-  font-size: 0.76rem;
-  color: var(--color-text-muted);
-}
-
 .profil-form__photo-remove {
   display: inline-flex;
   align-items: center;

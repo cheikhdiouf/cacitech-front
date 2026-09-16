@@ -23,6 +23,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Groupe } from '../../../core/models/groupe.models';
 import { toggleActif, bulkSetActif } from '../../../core/utils/toggle-actif';
 import { TableSelection } from '../../../core/utils/table-selection';
+import { makeFilterPredicate } from '../../../core/utils/table-filter';
 import { exportToExcel, exportToPdf } from '../../../core/utils/table-export';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
 import { BreadcrumbComponent } from '../../../shared/layout/breadcrumb/breadcrumb.component';
@@ -76,8 +77,10 @@ export class GroupeListComponent implements OnInit, AfterViewInit {
       this.dataSource.data = this.groupes();
     });
 
-    this.dataSource.filterPredicate = (groupe, filter) =>
-      groupe.nom.toLowerCase().includes(filter) || groupe.description.toLowerCase().includes(filter);
+    this.dataSource.filterPredicate = makeFilterPredicate<Groupe>(
+      (groupe) => groupe.nom,
+      (groupe) => groupe.description
+    );
 
     this.dataSource.sortingDataAccessor = (groupe, columnId) => {
       switch (columnId) {

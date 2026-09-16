@@ -1,11 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 
-/**
- * Sélection multiple pour une mat-table : encapsule le SelectionModel du CDK avec la logique
- * de "tout sélectionner" et le libellé d'accessibilité, identiques sur chaque liste (Entité,
- * Fonction, Groupe, Profil) mais dépendant chacune de leurs propres lignes filtrées et du champ
- * à afficher dans le libellé.
- */
+/** Sélection multiple partagée par les 5 listes (checkbox "tout sélectionner" + libellés a11y). */
 export class TableSelection<T> {
   private readonly model = new SelectionModel<T>(true, []);
 
