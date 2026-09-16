@@ -1,0 +1,66 @@
+<app-dialog-header [title]="title" icon="factory" />
+
+@if (readOnly) {
+  <div class="dialog-body">
+    <div mat-dialog-content class="secteur-form__content">
+      <app-form-section label="Informations" icon="info_outline" />
+
+      <app-detail-field label="Libellé" icon="factory" [value]="detailView()?.libelle" />
+      <app-detail-field
+        label="Description"
+        icon="notes"
+        [value]="detailView()?.description"
+        class="secteur-form__full"
+      />
+      <app-detail-field
+        label="Statut"
+        icon="toggle_on"
+        [value]="detailView()?.actif ? 'Actif' : 'Inactif'"
+        [tone]="detailView()?.actif ? 'success' : 'error'"
+      />
+    </div>
+
+    <div mat-dialog-actions class="detail-actions">
+      <button mat-stroked-button type="button" class="detail-actions__close" (click)="cancel()">
+        <mat-icon>close</mat-icon>
+        <span>Fermer</span>
+      </button>
+    </div>
+  </div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div mat-dialog-content class="secteur-form__content">
+      <app-form-section label="Informations" icon="info_outline" />
+
+      <app-text-field
+        label="Libellé"
+        icon="factory"
+        formControlName="libelle"
+        [required]="true"
+        [maxLength]="150"
+        class="secteur-form__full"
+        [errorMessage]="
+          libelle.hasError('required') && libelle.touched
+            ? 'Le libellé est requis.'
+            : libelle.hasError('maxlength')
+              ? 'Le libellé ne doit pas dépasser 150 caractères.'
+              : null
+        "
+      />
+      <app-text-field
+        label="Description"
+        icon="notes"
+        formControlName="description"
+        class="secteur-form__full"
+        [maxLength]="255"
+        [errorMessage]="description.hasError('maxlength') ? 'La description ne doit pas dépasser 255 caractères.' : null"
+      />
+
+      <mat-checkbox formControlName="actif">Secteur actif</mat-checkbox>
+    </div>
+
+    <div mat-dialog-actions>
+      <app-form-actions [isEdit]="isEdit" [submitting]="isSubmitting()" (cancel)="cancel()" />
+    </div>
+  </form>
+}

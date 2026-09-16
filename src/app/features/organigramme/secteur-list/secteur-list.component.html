@@ -1,0 +1,143 @@
+<app-breadcrumb />
+
+<div class="list-page__header">
+  <app-search-field
+    class="list-page__search"
+    placeholder="Rechercher un secteur..."
+    [value]="search()"
+    (valueChange)="onSearchChange($event)"
+  />
+  <div class="list-page__header-actions">
+    <button mat-stroked-button [matMenuTriggerFor]="exportMenu">
+      <mat-icon>file_download</mat-icon>
+      Exporter
+    </button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="exportExcel()">
+        <mat-icon>grid_on</mat-icon>
+        <span>Excel (.xlsx)</span>
+      </button>
+      <button mat-menu-item (click)="exportPdf()">
+        <mat-icon>picture_as_pdf</mat-icon>
+        <span>PDF</span>
+      </button>
+    </mat-menu>
+    <button mat-flat-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon>
+      Nouveau secteur
+    </button>
+  </div>
+</div>
+
+@if (selection.hasValue()) {
+  <div class="list-page__bulk-bar">
+    <span>{{ selection.selected.length }} élément(s) sélectionné(s)</span>
+    <div class="list-page__bulk-actions">
+      <button mat-stroked-button (click)="bulkActivate()">
+        <mat-icon>toggle_on</mat-icon>
+        Activer
+      </button>
+      <button mat-stroked-button color="warn" (click)="bulkDeactivate()">
+        <mat-icon>toggle_off</mat-icon>
+        Désactiver
+      </button>
+      <button mat-icon-button (click)="selection.clear()" aria-label="Annuler la sélection">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+}
+
+@if (loading()) {
+  <div class="list-page__table-wrap">
+    <app-table-skeleton [columns]="displayedColumns.length" />
+  </div>
+} @else if (error()) {
+  <div class="list-page__state list-page__state--error">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ error() }}</p>
+    <button mat-stroked-button class="list-page__retry" (click)="load()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
+  </div>
+} @else {
+  <div class="list-page__table-wrap">
+    <table mat-table [dataSource]="dataSource" matSort class="list-page__table">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.masterToggle() : null"
+            [checked]="selection.hasValue() && selection.isAllSelected()"
+            [indeterminate]="selection.hasValue() && !selection.isAllSelected()"
+            [aria-label]="selection.checkboxLabel()"
+          ></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let secteur" (click)="$event.stopPropagation()">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(secteur) : null"
+            [checked]="selection.isSelected(secteur)"
+            [aria-label]="selection.checkboxLabel(secteur)"
+          ></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="libelle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Libellé</th>
+        <td mat-cell *matCellDef="let secteur" [title]="secteur.libelle">{{ secteur.libelle }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+        <td mat-cell *matCellDef="let secteur" [title]="secteur.description">{{ secteur.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actif">
+        <th mat-header-cell *matHeaderCellDef>Statut</th>
+        <td mat-cell *matCellDef="let secteur" (click)="$event.stopPropagation()">
+          <mat-slide-toggle
+            [checked]="secteur.actif"
+            (change)="onToggleActif(secteur.id)"
+            [aria-label]="secteur.actif ? 'Désactiver' : 'Activer'"
+          >
+            {{ secteur.actif ? 'Actif' : 'Inactif' }}
+          </mat-slide-toggle>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
+        <td mat-cell *matCellDef="let secteur">
+          <button mat-icon-button (click)="$event.stopPropagation(); openDetail(secteur)" aria-label="Voir le détail">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button (click)="$event.stopPropagation(); openEdit(secteur)" aria-label="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let secteur; columns: displayedColumns"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'Modifier ' + secteur.libelle"
+        (click)="openEdit(secteur)"
+        (keydown.enter)="openEdit(secteur)"
+      ></tr>
+
+      <tr *matNoDataRow>
+        <td [attr.colspan]="displayedColumns.length" class="list-page__empty">
+          {{ search() ? 'Aucun secteur ne correspond à votre recherche.' : 'Aucun secteur trouvé.' }}
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" [pageSize]="10" showFirstLastButtons aria-label="Pages de secteurs">
+    </mat-paginator>
+  </div>
+}

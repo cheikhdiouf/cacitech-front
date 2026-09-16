@@ -39,12 +39,17 @@
         <app-detail-field label="Entité" icon="apartment" [value]="entiteLabel()" />
         <app-detail-field label="Fonction" icon="work_outline" [value]="fonctionLabel()" />
         <app-detail-field label="Groupes" icon="group" [value]="groupesLabel()" class="profil-form__full" />
-        <app-detail-field label="Prime commerciale" icon="payments" [value]="detailView()?.prime + ' FCFA'" />
+        <app-detail-field label="Prime commerciale" icon="payments" [value]="primeLabel()" />
       </div>
 
       <app-form-section label="Statut" icon="toggle_on" />
 
-      <app-detail-field label="Statut" icon="toggle_on" [value]="detailView()?.actif ? 'Actif' : 'Inactif'" />
+      <app-detail-field
+        label="Statut"
+        icon="toggle_on"
+        [value]="detailView()?.actif ? 'Actif' : 'Inactif'"
+        [tone]="detailView()?.actif ? 'success' : 'error'"
+      />
 
       <div class="form-page__actions detail-actions">
         <button mat-stroked-button type="button" class="detail-actions__close" (click)="cancel()">
@@ -147,29 +152,39 @@
         <div class="profil-form__grid">
           <mat-form-field appearance="outline">
             <mat-label>Entité</mat-label>
-            <mat-select formControlName="entite">
+            <mat-icon matPrefix>apartment</mat-icon>
+            <mat-select formControlName="entite" required>
               @for (organe of organes(); track organe.id) {
                 <mat-option [value]="organe.id">{{ organe.organe }}</mat-option>
               }
             </mat-select>
+            @if (entite.hasError('required') && entite.touched) {
+              <mat-error>L'entité est requise.</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Fonction</mat-label>
-            <mat-select formControlName="fonction">
+            <mat-icon matPrefix>work_outline</mat-icon>
+            <mat-select formControlName="fonction" required>
               @for (fonction of fonctions(); track fonction.id) {
                 <mat-option [value]="fonction.id">{{ fonction.fonction }}</mat-option>
               }
             </mat-select>
+            @if (fonction.hasError('required') && fonction.touched) {
+              <mat-error>La fonction est requise.</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="profil-form__full">
             <mat-label>Groupes</mat-label>
+            <mat-icon matPrefix>group</mat-icon>
             <mat-select formControlName="groupes" multiple>
               @for (groupe of groupesDisponibles(); track groupe.id) {
                 <mat-option [value]="groupe.id">{{ groupe.nom }}</mat-option>
               }
             </mat-select>
+            <mat-hint>Un profil peut appartenir à plusieurs groupes.</mat-hint>
           </mat-form-field>
 
           <app-text-field label="Prime commerciale" icon="payments" type="number" formControlName="prime" />

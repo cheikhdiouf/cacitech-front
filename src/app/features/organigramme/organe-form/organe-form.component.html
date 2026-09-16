@@ -14,7 +14,12 @@
 
       <app-detail-field label="Tutelle" icon="account_tree" [value]="tutelleLabel()" />
       <app-detail-field label="Responsable" icon="badge" [value]="responsableLabel()" />
-      <app-detail-field label="Statut" icon="toggle_on" [value]="detailView()?.actif ? 'Active' : 'Inactive'" />
+      <app-detail-field
+        label="Statut"
+        icon="toggle_on"
+        [value]="detailView()?.actif ? 'Active' : 'Inactive'"
+        [tone]="detailView()?.actif ? 'success' : 'error'"
+      />
     </div>
 
     <div mat-dialog-actions class="detail-actions">
@@ -62,6 +67,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Tutelle</mat-label>
+        <mat-icon matPrefix>account_tree</mat-icon>
         <mat-select formControlName="organe_superieure">
           <mat-option [value]="''">Aucune</mat-option>
           @for (organe of organesDisponibles(); track organe.id) {
@@ -72,6 +78,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Responsable</mat-label>
+        <mat-icon matPrefix>badge</mat-icon>
         <mat-select formControlName="responsable">
           <mat-option [value]="''">Aucun</mat-option>
           @for (profil of profils(); track profil.id) {

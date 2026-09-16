@@ -68,6 +68,13 @@ export const routes: Routes = [
           import('./features/organigramme/organe-list/organe-list.component').then((m) => m.OrganeListComponent),
         title: 'Cacitech',
         data: { breadcrumb: ['Organigramme', 'Entités'] }
+      },
+      {
+        path: 'organigramme/secteurs',
+        loadComponent: () =>
+          import('./features/organigramme/secteur-list/secteur-list.component').then((m) => m.SecteurListComponent),
+        title: 'Cacitech',
+        data: { breadcrumb: ['Organigramme', "Secteurs d'activité"] }
       }
     ]
   },

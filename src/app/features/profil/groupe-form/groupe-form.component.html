@@ -13,6 +13,7 @@
         label="Statut"
         icon="toggle_on"
         [value]="detailView()?.actif ? 'Actif' : 'Inactif'"
+        [tone]="detailView()?.actif ? 'success' : 'error'"
         class="groupe-form__full"
       />
 

@@ -13,7 +13,12 @@
         [value]="detailView()?.description"
         class="fonction-form__full"
       />
-      <app-detail-field label="Statut" icon="toggle_on" [value]="detailView()?.actif ? 'Active' : 'Inactive'" />
+      <app-detail-field
+        label="Statut"
+        icon="toggle_on"
+        [value]="detailView()?.actif ? 'Active' : 'Inactive'"
+        [tone]="detailView()?.actif ? 'success' : 'error'"
+      />
     </div>
 
     <div mat-dialog-actions class="detail-actions">

@@ -236,6 +236,25 @@
   color: var(--color-text-primary);
 }
 
+/* Statut Actif/Inactif : vert sémantique plutôt que le bleu de marque utilisé partout
+ * ailleurs (boutons, liens, en-têtes) — sinon "actif" ne se distingue pas visuellement du
+ * reste de l'interface. Convention ERP courante (Salesforce, Odoo) : vert = actif. */
+.list-page__table mat-slide-toggle {
+  --mdc-switch-selected-track-color: var(--color-success-solid);
+  --mdc-switch-selected-hover-track-color: var(--color-success-solid);
+  --mdc-switch-selected-focus-track-color: var(--color-success-solid);
+  --mdc-switch-selected-pressed-track-color: var(--color-success-solid);
+  --mdc-switch-selected-handle-color: var(--color-success-solid);
+  --mdc-switch-selected-hover-handle-color: var(--color-success-solid);
+  --mdc-switch-selected-focus-handle-color: var(--color-success-solid);
+  --mdc-switch-selected-pressed-handle-color: var(--color-success-solid);
+}
+
+.list-page__table mat-slide-toggle .mdc-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
 /* Colonne action (bouton "Modifier") : figée à droite, visible en permanence — l'en-tête
  * (vide) doit partager le même alignement, sinon sa largeur calculée diverge de celle de
  * la colonne au-dessous en table-layout: fixed. */

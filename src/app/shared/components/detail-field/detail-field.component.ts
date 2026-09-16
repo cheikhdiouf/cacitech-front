@@ -14,4 +14,7 @@ export class DetailFieldComponent {
   @Input({ required: true }) label!: string;
   @Input() icon: string | null = null;
   @Input() value: string | null | undefined = null;
+  /** Colore la valeur (ex: statut Actif/Inactif) avec le même vert/rouge sémantique que le
+   * reste de l'app plutôt qu'un texte neutre, pour rester scannable d'un coup d'œil. */
+  @Input() tone: 'success' | 'error' | null = null;
 }

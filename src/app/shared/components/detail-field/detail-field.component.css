@@ -56,3 +56,11 @@
   line-height: 1.35;
   overflow-wrap: break-word;
 }
+
+.detail-field__value--success {
+  color: var(--color-success-solid);
+}
+
+.detail-field__value--error {
+  color: var(--color-error-solid);
+}

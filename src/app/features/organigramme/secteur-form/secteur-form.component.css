@@ -1,0 +1,33 @@
+.secteur-form__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  align-content: start;
+  column-gap: 1.25rem;
+  row-gap: 1.25rem;
+  min-height: 220px;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  overflow-x: hidden;
+}
+
+.secteur-form__content app-form-section,
+.secteur-form__content mat-checkbox,
+.secteur-form__content .secteur-form__full {
+  grid-column: 1 / -1;
+}
+
+/* Sans ça, un composant en enfant de grille garde une largeur min. basée sur son contenu
+ * (ex: une description longue sans espace) et peut dépasser la colonne, provoquant un
+ * scroll horizontal indésirable dans la popup. */
+.secteur-form__content app-detail-field {
+  display: block;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .secteur-form__content {
+    grid-template-columns: 1fr;
+    min-width: 0;
+  }
+}

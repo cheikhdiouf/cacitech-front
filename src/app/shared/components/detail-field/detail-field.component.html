@@ -6,6 +6,10 @@
   }
   <div class="detail-field__body">
     <span class="detail-field__label">{{ label }}</span>
-    <span class="detail-field__value">{{ value || '—' }}</span>
+    <span
+      class="detail-field__value"
+      [class.detail-field__value--success]="tone === 'success'"
+      [class.detail-field__value--error]="tone === 'error'"
+    >{{ value || '—' }}</span>
   </div>
 </div>

@@ -80,6 +80,11 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
       .map((g) => g.nom);
     return names.length ? names.join(', ') : 'Aucun';
   });
+
+  readonly primeLabel = computed(() => {
+    const prime = this.detailView()?.prime;
+    return prime != null ? `${prime} FCFA` : '—';
+  });
   private photoFile: File | null = null;
   /** URL blob locale (aperçu avant upload) — distincte de l'URL serveur, à révoquer nous-mêmes. */
   private objectUrl: string | null = null;
@@ -120,6 +125,14 @@ export class ProfilFormComponent implements OnInit, OnDestroy {
 
   get adresse() {
     return this.form.controls.adresse;
+  }
+
+  get entite() {
+    return this.form.controls.entite;
+  }
+
+  get fonction() {
+    return this.form.controls.fonction;
   }
 
   ngOnInit(): void {

@@ -52,7 +52,8 @@ export class SidebarComponent implements OnInit {
       icon: 'account_tree',
       children: [
         { label: 'Entités', icon: 'apartment', route: '/organigramme/organes' },
-        { label: 'Fonctions', icon: 'work_outline', route: '/organigramme/fonctions' }
+        { label: 'Fonctions', icon: 'work_outline', route: '/organigramme/fonctions' },
+        { label: "Secteurs d'activité", icon: 'factory', route: '/organigramme/secteurs' }
       ]
     }
   ];
