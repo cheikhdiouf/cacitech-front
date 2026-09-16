@@ -5,8 +5,10 @@
   --mdc-outlined-text-field-hover-outline-color: var(--color-brand-500);
 }
 
+/* Fond blanc plutôt que gris-tinté : plus lisible, et cohérent avec les mat-select des mêmes
+ * formulaires qui, eux, n'ont pas de fond personnalisé (transparent = blanc sur le popup). */
 .text-field .mat-mdc-text-field-wrapper {
-  background: var(--color-surface-muted);
+  background: var(--color-surface);
   border-radius: 10px;
 }
 

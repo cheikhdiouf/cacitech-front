@@ -8,6 +8,7 @@ import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { provideFrenchPaginatorIntl } from './core/utils/french-paginator-intl';
+import { provideMaterialSymbolsIcons } from './core/utils/material-symbols-icon-initializer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideAnimationsAsync(),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
-    { provide: MatPaginatorIntl, useFactory: provideFrenchPaginatorIntl }
+    { provide: MatPaginatorIntl, useFactory: provideFrenchPaginatorIntl },
+    provideMaterialSymbolsIcons()
   ]
 };
