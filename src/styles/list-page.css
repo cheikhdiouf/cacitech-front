@@ -351,3 +351,34 @@
 .list-page__table-wrap .mat-mdc-paginator {
   --mat-paginator-container-text-size: 0.78rem;
 }
+
+/* Mobile/tablette étroite : `table-layout: fixed` + `overflow: hidden` (voulu sur desktop pour
+ * éviter toute scrollbar) écrase les colonnes à quelques pixels d'un tableau à 6-8 colonnes —
+ * illisible et impossible à consulter puisque le débordement est masqué, pas juste coupé. En
+ * dessous de ce seuil on bascule sur le pattern standard "tableau large + scroll horizontal
+ * dans sa carte" : chaque colonne retrouve une largeur naturelle lisible. */
+@media (max-width: 720px) {
+  .list-page__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .list-page__header-actions {
+    justify-content: flex-start;
+  }
+
+  .list-page__table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .list-page__table {
+    table-layout: auto;
+    min-width: 640px;
+  }
+
+  .list-page__table th,
+  .list-page__table td {
+    white-space: nowrap;
+  }
+}

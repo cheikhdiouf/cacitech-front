@@ -14,4 +14,12 @@ export class NotificationService {
   error(message: string): void {
     this.snackBar.open(message, 'Fermer', { ...DEFAULT_CONFIG, duration: 5000, panelClass: 'app-snackbar-error' });
   }
+
+  warning(message: string): void {
+    this.snackBar.open(message, 'Fermer', { ...DEFAULT_CONFIG, duration: 5000, panelClass: 'app-snackbar-warning' });
+  }
+
+  info(message: string): void {
+    this.snackBar.open(message, 'Fermer', { ...DEFAULT_CONFIG, duration: 4000, panelClass: 'app-snackbar-info' });
+  }
 }

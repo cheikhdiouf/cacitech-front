@@ -22,7 +22,7 @@
     @if (!collapsed) {
       <span class="sidebar__section-label">Menu principal</span>
     }
-    @for (item of navItems; track item.label) {
+    @for (item of navItems(); track item.label) {
       @if (item.children) {
         <button
           type="button"

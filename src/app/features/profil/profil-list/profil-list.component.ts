@@ -15,6 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HasPermissionDirective } from '../../../core/directives/has-permission.directive';
+import { CurrentUserPermissionsService } from '../../../core/services/current-user-permissions.service';
 import { TableSkeletonComponent } from '../../../shared/components/table-skeleton/table-skeleton.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -49,6 +51,7 @@ interface ProfilRow {
     MatCheckboxModule,
     MatMenuModule,
     MatTooltipModule,
+    HasPermissionDirective,
     TableSkeletonComponent,
     MatSlideToggleModule,
     MatTableModule,
@@ -64,6 +67,7 @@ export class ProfilListComponent implements OnInit, AfterViewInit {
   private readonly router = inject(Router);
   private readonly dialogService = inject(DialogService);
   private readonly profilService = inject(ProfilService);
+  readonly permissions = inject(CurrentUserPermissionsService);
   private readonly organigrammeService = inject(OrganigrammeService);
   private readonly notification = inject(NotificationService);
 

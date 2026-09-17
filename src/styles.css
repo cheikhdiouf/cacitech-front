@@ -164,16 +164,22 @@ input:focus-visible,
   }
 }
 
-/* Toasts : carte claire + liseré de couleur (au lieu d'un aplat saturé plein écran). */
+/* Toasts : carte claire (pas d'aplat saturé plein écran) + icône de statut + barre de
+ * décompte en bas indiquant le temps restant avant fermeture automatique. */
 .app-snackbar-success,
-.app-snackbar-error {
+.app-snackbar-error,
+.app-snackbar-warning,
+.app-snackbar-info {
   --mdc-snackbar-supporting-text-color: var(--color-text-primary);
 }
 
 .app-snackbar-success .mdc-snackbar__surface,
-.app-snackbar-error .mdc-snackbar__surface {
+.app-snackbar-error .mdc-snackbar__surface,
+.app-snackbar-warning .mdc-snackbar__surface,
+.app-snackbar-info .mdc-snackbar__surface {
+  position: relative;
+  overflow: hidden;
   border-radius: 10px !important;
-  border-left: 4px solid transparent;
   box-shadow: var(--shadow-lg) !important;
 }
 
@@ -181,14 +187,18 @@ input:focus-visible,
  * pas avoir à faire passer un mat-icon dans NotificationService.open(), qui n'accepte que
  * du texte brut par défaut. */
 .app-snackbar-success .mdc-snackbar__label,
-.app-snackbar-error .mdc-snackbar__label {
+.app-snackbar-error .mdc-snackbar__label,
+.app-snackbar-warning .mdc-snackbar__label,
+.app-snackbar-info .mdc-snackbar__label {
   display: flex;
   align-items: center;
   gap: 0.6rem;
 }
 
 .app-snackbar-success .mdc-snackbar__label::before,
-.app-snackbar-error .mdc-snackbar__label::before {
+.app-snackbar-error .mdc-snackbar__label::before,
+.app-snackbar-warning .mdc-snackbar__label::before,
+.app-snackbar-info .mdc-snackbar__label::before {
   font-family: 'Material Symbols Outlined';
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
   font-size: 20px;
@@ -196,17 +206,52 @@ input:focus-visible,
   flex-shrink: 0;
 }
 
-.app-snackbar-success {
-  --mdc-snackbar-container-color: var(--color-success-bg);
+/* Barre de décompte : une largeur pleine qui se réduit jusqu'à 0 sur la durée exacte
+ * d'affichage du toast (doit rester synchronisée avec `duration` dans NotificationService). */
+.app-snackbar-success .mdc-snackbar__surface::after,
+.app-snackbar-error .mdc-snackbar__surface::after,
+.app-snackbar-warning .mdc-snackbar__surface::after,
+.app-snackbar-info .mdc-snackbar__surface::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left center;
+  animation: app-toast-countdown linear forwards;
 }
 
-.app-snackbar-success .mdc-snackbar__surface {
-  border-left-color: var(--color-success-solid);
+@keyframes app-toast-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-snackbar-success .mdc-snackbar__surface::after,
+  .app-snackbar-error .mdc-snackbar__surface::after,
+  .app-snackbar-warning .mdc-snackbar__surface::after,
+  .app-snackbar-info .mdc-snackbar__surface::after {
+    animation: none;
+  }
+}
+
+.app-snackbar-success {
+  --mdc-snackbar-container-color: var(--color-success-bg);
 }
 
 .app-snackbar-success .mdc-snackbar__label::before {
   content: 'check_circle';
   color: var(--color-success-solid);
+}
+
+.app-snackbar-success .mdc-snackbar__surface::after {
+  background: var(--color-success-solid);
+  animation-duration: 4s;
 }
 
 .app-snackbar-success .mat-mdc-snack-bar-action {
@@ -217,17 +262,54 @@ input:focus-visible,
   --mdc-snackbar-container-color: var(--color-error-bg);
 }
 
-.app-snackbar-error .mdc-snackbar__surface {
-  border-left-color: var(--color-error-solid);
-}
-
 .app-snackbar-error .mdc-snackbar__label::before {
   content: 'error';
   color: var(--color-error-solid);
 }
 
+.app-snackbar-error .mdc-snackbar__surface::after {
+  background: var(--color-error-solid);
+  animation-duration: 5s;
+}
+
 .app-snackbar-error .mat-mdc-snack-bar-action {
   color: var(--color-error-solid) !important;
+}
+
+.app-snackbar-warning {
+  --mdc-snackbar-container-color: var(--color-warning-bg);
+}
+
+.app-snackbar-warning .mdc-snackbar__label::before {
+  content: 'warning';
+  color: var(--color-warning-solid);
+}
+
+.app-snackbar-warning .mdc-snackbar__surface::after {
+  background: var(--color-warning-solid);
+  animation-duration: 5s;
+}
+
+.app-snackbar-warning .mat-mdc-snack-bar-action {
+  color: var(--color-warning-solid) !important;
+}
+
+.app-snackbar-info {
+  --mdc-snackbar-container-color: var(--color-info-bg);
+}
+
+.app-snackbar-info .mdc-snackbar__label::before {
+  content: 'info';
+  color: var(--color-info-solid);
+}
+
+.app-snackbar-info .mdc-snackbar__surface::after {
+  background: var(--color-info-solid);
+  animation-duration: 4s;
+}
+
+.app-snackbar-info .mat-mdc-snack-bar-action {
+  color: var(--color-info-solid) !important;
 }
 
 /* Popups (formulaires courts) : coins arrondis + ombre marquée cohérents avec les cartes de

@@ -52,6 +52,17 @@
    --color-error-text: #7a1e1e;
    --color-error-solid: #dc2626;
 
+   /* Sémantique - avertissement */
+   --color-warning-bg: #fef6e7;
+   --color-warning-border: #f5dfa3;
+   --color-warning-text: #7a4e05;
+   --color-warning-solid: #d97706;
+
+   /* Sémantique - information (alias du bleu de marque : rester sur une seule palette) */
+   --color-info-bg: var(--color-brand-tint);
+   --color-info-text: var(--color-brand-700);
+   --color-info-solid: var(--color-brand-500);
+
    /* Sidebar — alias des rôles ci-dessus plutôt que des teintes indépendantes : la sidebar
      partage exactement la même charte que le reste de l'app (fond blanc épuré à la Linear/
      HubSpot, juste une bordure fine), un seul jeu de couleurs à maintenir. */

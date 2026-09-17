@@ -13,6 +13,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HasPermissionDirective } from '../../../core/directives/has-permission.directive';
+import { CurrentUserPermissionsService } from '../../../core/services/current-user-permissions.service';
 import { TableSkeletonComponent } from '../../../shared/components/table-skeleton/table-skeleton.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -39,6 +41,7 @@ import { FonctionFormComponent } from '../fonction-form/fonction-form.component'
     MatCheckboxModule,
     MatMenuModule,
     MatTooltipModule,
+    HasPermissionDirective,
     TableSkeletonComponent,
     MatSlideToggleModule,
     MatTableModule,
@@ -52,6 +55,7 @@ import { FonctionFormComponent } from '../fonction-form/fonction-form.component'
 })
 export class FonctionListComponent implements OnInit, AfterViewInit {
   private readonly organigrammeService = inject(OrganigrammeService);
+  readonly permissions = inject(CurrentUserPermissionsService);
   private readonly notification = inject(NotificationService);
   private readonly dialogService = inject(DialogService);
 

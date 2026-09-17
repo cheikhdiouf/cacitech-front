@@ -6,6 +6,7 @@
 @if (loading()) {
   <div class="home__state">
     <mat-spinner diameter="32"></mat-spinner>
+    <p>Chargement de votre tableau de bord…</p>
   </div>
 } @else if (error()) {
   <div class="home__state home__state--error">

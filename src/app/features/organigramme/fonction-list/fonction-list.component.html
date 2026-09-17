@@ -22,7 +22,7 @@
         <span>PDF</span>
       </button>
     </mat-menu>
-    <button mat-flat-button color="primary" (click)="openCreate()">
+    <button *appHasPermission="'add_fonction'" mat-flat-button color="primary" (click)="openCreate()">
       <mat-icon>add</mat-icon>
       Nouvelle fonction
     </button>
@@ -33,11 +33,11 @@
   <div class="list-page__bulk-bar">
     <span>{{ selection.selected.length }} élément(s) sélectionné(s)</span>
     <div class="list-page__bulk-actions">
-      <button mat-stroked-button (click)="bulkActivate()">
+      <button *appHasPermission="'change_fonction'" mat-stroked-button (click)="bulkActivate()">
         <mat-icon>toggle_on</mat-icon>
         Activer
       </button>
-      <button mat-stroked-button color="warn" (click)="bulkDeactivate()">
+      <button *appHasPermission="'change_fonction'" mat-stroked-button color="warn" (click)="bulkDeactivate()">
         <mat-icon>toggle_off</mat-icon>
         Désactiver
       </button>
@@ -115,12 +115,16 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
         <td mat-cell *matCellDef="let fonction">
-          <button mat-icon-button (click)="$event.stopPropagation(); openDetail(fonction)" aria-label="Voir le détail" matTooltip="Voir le détail">
-            <mat-icon>visibility</mat-icon>
-          </button>
-          <button mat-icon-button (click)="$event.stopPropagation(); openEdit(fonction)" aria-label="Modifier" matTooltip="Modifier">
-            <mat-icon>edit</mat-icon>
-          </button>
+          @if (permissions.has('detail_fonction')) {
+            <button mat-icon-button (click)="$event.stopPropagation(); openDetail(fonction)" aria-label="Voir le détail" matTooltip="Voir le détail">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          }
+          @if (permissions.has('change_fonction')) {
+            <button mat-icon-button (click)="$event.stopPropagation(); openEdit(fonction)" aria-label="Modifier" matTooltip="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
         </td>
       </ng-container>
 

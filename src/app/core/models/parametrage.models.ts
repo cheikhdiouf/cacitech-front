@@ -14,3 +14,10 @@ export interface CreateSecteurActiviteRequest {
   description: string | null;
   actif: boolean;
 }
+
+/** Forme non documentée par le spec OpenAPI (réponse "No response body") — à corriger dès
+ * qu'un exemple réel de réponse est disponible. */
+export interface Pays {
+  code: string;
+  nom: string;
+}

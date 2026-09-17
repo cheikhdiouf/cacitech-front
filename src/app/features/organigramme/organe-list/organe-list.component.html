@@ -35,7 +35,7 @@
         <span>PDF</span>
       </button>
     </mat-menu>
-    <button mat-flat-button color="primary" (click)="openCreate()">
+    <button *appHasPermission="'add_organe'" mat-flat-button color="primary" (click)="openCreate()">
       <mat-icon>add</mat-icon>
       Nouvelle entité
     </button>
@@ -46,11 +46,11 @@
   <div class="list-page__bulk-bar">
     <span>{{ selection.selected.length }} élément(s) sélectionné(s)</span>
     <div class="list-page__bulk-actions">
-      <button mat-stroked-button (click)="bulkActivate()">
+      <button *appHasPermission="'change_organe'" mat-stroked-button (click)="bulkActivate()">
         <mat-icon>toggle_on</mat-icon>
         Activer
       </button>
-      <button mat-stroked-button color="warn" (click)="bulkDeactivate()">
+      <button *appHasPermission="'change_organe'" mat-stroked-button color="warn" (click)="bulkDeactivate()">
         <mat-icon>toggle_off</mat-icon>
         Désactiver
       </button>
@@ -105,12 +105,16 @@
               {{ node.organe.actif ? 'Actif' : 'Inactif' }}
             </span>
             <span class="organe-tree__actions">
-              <button mat-icon-button (click)="openDetail(node.organe)" aria-label="Voir le détail" matTooltip="Voir le détail">
-                <mat-icon>visibility</mat-icon>
-              </button>
-              <button mat-icon-button (click)="openEdit(node.organe)" aria-label="Modifier" matTooltip="Modifier">
-                <mat-icon>edit</mat-icon>
-              </button>
+              @if (permissions.has('detail_organe')) {
+                <button mat-icon-button (click)="openDetail(node.organe)" aria-label="Voir le détail" matTooltip="Voir le détail">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              }
+              @if (permissions.has('change_organe')) {
+                <button mat-icon-button (click)="openEdit(node.organe)" aria-label="Modifier" matTooltip="Modifier">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              }
             </span>
           </div>
         </mat-tree-node>
@@ -138,12 +142,16 @@
               {{ node.organe.actif ? 'Actif' : 'Inactif' }}
             </span>
             <span class="organe-tree__actions">
-              <button mat-icon-button (click)="openDetail(node.organe)" aria-label="Voir le détail" matTooltip="Voir le détail">
-                <mat-icon>visibility</mat-icon>
-              </button>
-              <button mat-icon-button (click)="openEdit(node.organe)" aria-label="Modifier" matTooltip="Modifier">
-                <mat-icon>edit</mat-icon>
-              </button>
+              @if (permissions.has('detail_organe')) {
+                <button mat-icon-button (click)="openDetail(node.organe)" aria-label="Voir le détail" matTooltip="Voir le détail">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              }
+              @if (permissions.has('change_organe')) {
+                <button mat-icon-button (click)="openEdit(node.organe)" aria-label="Modifier" matTooltip="Modifier">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              }
             </span>
           </div>
           <div class="organe-tree__outlet" [class.organe-tree__outlet--hidden]="!treeControl.isExpanded(node)" role="group">
@@ -212,12 +220,16 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button (click)="$event.stopPropagation(); openDetail(row.organe)" aria-label="Voir le détail" matTooltip="Voir le détail">
-            <mat-icon>visibility</mat-icon>
-          </button>
-          <button mat-icon-button (click)="$event.stopPropagation(); openEdit(row.organe)" aria-label="Modifier" matTooltip="Modifier">
-            <mat-icon>edit</mat-icon>
-          </button>
+          @if (permissions.has('detail_organe')) {
+            <button mat-icon-button (click)="$event.stopPropagation(); openDetail(row.organe)" aria-label="Voir le détail" matTooltip="Voir le détail">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          }
+          @if (permissions.has('change_organe')) {
+            <button mat-icon-button (click)="$event.stopPropagation(); openEdit(row.organe)" aria-label="Modifier" matTooltip="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
         </td>
       </ng-container>
 

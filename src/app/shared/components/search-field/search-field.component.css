@@ -4,6 +4,15 @@
   --mdc-outlined-text-field-container-shape: 10px;
 }
 
+/* Pleine largeur sur mobile : la limite à 280px n'a de sens que quand le champ partage sa
+ * ligne avec les boutons d'export/création à droite — sur petit écran ces boutons passent
+ * déjà à la ligne suivante (list-page.css), donc autant utiliser toute la largeur. */
+@media (max-width: 720px) {
+  .search-field {
+    max-width: none;
+  }
+}
+
 .search-field ::ng-deep .mat-mdc-text-field-wrapper {
   height: 40px;
   background: var(--color-surface-muted);
@@ -18,7 +27,7 @@
 .search-field:hover ::ng-deep .mdc-notched-outline__leading,
 .search-field:hover ::ng-deep .mdc-notched-outline__notch,
 .search-field:hover ::ng-deep .mdc-notched-outline__trailing {
-  border-color: var(--color-brand-500);
+  border-color: var(--color-border);
 }
 
 .search-field.mat-focused ::ng-deep .mat-mdc-text-field-wrapper {

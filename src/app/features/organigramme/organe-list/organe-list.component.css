@@ -190,4 +190,40 @@
   .organe-tree__abbr {
     display: none;
   }
+
+  /* Icônes, indentation et bouton d'action réduits : sur un nœud enfoncé sur 2-3 niveaux,
+   * les éléments de largeur fixe (icônes, badge, actions) laissaient presque plus de place
+   * au nom de l'entité une fois cumulés avec l'indentation. */
+  .organe-tree__outlet {
+    margin-left: 0.6rem;
+    padding-left: 0.7rem;
+  }
+
+  .organe-tree__toggle,
+  .organe-tree__toggle-spacer {
+    width: 26px;
+  }
+
+  .organe-tree__toggle {
+    --mdc-icon-button-state-layer-size: 26px;
+  }
+
+  .organe-tree__icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .organe-tree__status {
+    font-size: 0;
+    padding: 0.35rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .organe-tree__actions button[mat-icon-button] {
+    width: 28px;
+    height: 28px;
+    --mdc-icon-button-state-layer-size: 28px;
+  }
 }

@@ -16,6 +16,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HasPermissionDirective } from '../../../core/directives/has-permission.directive';
+import { CurrentUserPermissionsService } from '../../../core/services/current-user-permissions.service';
 import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { TableSkeletonComponent } from '../../../shared/components/table-skeleton/table-skeleton.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -54,6 +56,7 @@ interface OrganeNode {
     MatCheckboxModule,
     MatMenuModule,
     MatTooltipModule,
+    HasPermissionDirective,
     MatTreeModule,
     TableSkeletonComponent,
     MatSlideToggleModule,
@@ -69,6 +72,7 @@ interface OrganeNode {
 })
 export class OrganeListComponent implements OnInit, AfterViewInit {
   private readonly organigrammeService = inject(OrganigrammeService);
+  readonly permissions = inject(CurrentUserPermissionsService);
   private readonly notification = inject(NotificationService);
   private readonly dialogService = inject(DialogService);
 

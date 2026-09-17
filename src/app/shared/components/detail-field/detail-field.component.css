@@ -11,7 +11,6 @@
 }
 
 .detail-field:hover {
-  border-color: var(--color-brand-500);
   box-shadow: var(--shadow-sm);
 }
 

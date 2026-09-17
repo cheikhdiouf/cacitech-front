@@ -3,6 +3,8 @@ import { HttpClient, HttpContext, HttpContextToken } from '@angular/common/http'
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthError, AuthSession, LoginRequest, RefreshResponse, TokenResponse, User } from '../models/auth.models';
+import { CurrentUserPermissionsService } from './current-user-permissions.service';
+import { PermissionService } from './permission.service';
 
 const REFRESH_TOKEN_KEY = 'cicatech.auth.refreshToken';
 const REMEMBER_KEY = 'cicatech.auth.remember';
@@ -16,6 +18,8 @@ export const SKIP_AUTH = new HttpContextToken<boolean>(() => false);
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly currentUserPermissions = inject(CurrentUserPermissionsService);
+  private readonly permissionService = inject(PermissionService);
 
   private readonly accessTokenSignal = signal<string | null>(null);
   private readonly userSignal = signal<User | null>(this.restoreUser());
@@ -68,6 +72,11 @@ export class AuthService {
     this.accessTokenSignal.set(null);
     this.userSignal.set(null);
     this.refreshTokenValue = null;
+    /** Sans ça, les permissions de l'utilisateur précédent restent en cache (services
+     * singleton) et seraient réutilisées à tort si un autre utilisateur se reconnecte dans
+     * le même onglet, sans rechargement complet de la page. */
+    this.currentUserPermissions.reset();
+    this.permissionService.invalidateMyPermissions();
 
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(REFRESH_TOKEN_KEY);
@@ -88,6 +97,12 @@ export class AuthService {
 
   private applySession(username: string, tokens: TokenResponse, remember: boolean): AuthSession {
     const user: User = { username };
+
+    /** Ceinture et bretelles : garantit un état de permissions vierge à chaque nouvelle
+     * connexion même si logout() n'a pas été appelé explicitement avant (session expirée
+     * silencieusement, reconnexion directe...). */
+    this.currentUserPermissions.reset();
+    this.permissionService.invalidateMyPermissions();
 
     this.accessTokenSignal.set(tokens.access);
     this.userSignal.set(user);
